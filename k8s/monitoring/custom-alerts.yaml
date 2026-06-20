@@ -1,0 +1,219 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: company-lab-custom-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring  # must match kube-prometheus-stack release name for rule discovery
+spec:
+  groups:
+    - name: coredns.alerts
+      rules:
+        - alert: CoreDNSLowSuccessRate
+          expr: |
+            (
+              sum(rate(coredns_dns_responses_total{rcode!~"SERVFAIL|REFUSED|FORMERR"}[5m]))
+              /
+              sum(rate(coredns_dns_responses_total[5m]))
+            ) < 0.95
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "CoreDNS success rate below 95% ({{ $value | humanizePercentage }})"
+            description: |
+              CoreDNS is returning non-success responses (SERVFAIL/REFUSED/FORMERR)
+              at a rate that puts success below 95% over the last 5 minutes.
+              Check NetworkPolicy, CoreDNS logs, and upstream DNS connectivity.
+        - alert: CoreDNSNoHealthyPods
+          expr: sum(up{job="coredns"}) == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "CoreDNS has no healthy pods"
+            description: "No CoreDNS pods are responding. Cluster DNS is down."
+
+        - alert: CoreDNSSERVFAILSpike
+          expr: |
+            sum(rate(coredns_dns_responses_total{rcode="SERVFAIL"}[5m])) > 0.5
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "CoreDNS SERVFAIL rate elevated ({{ $value | humanize }} rps)"
+            description: |
+              CoreDNS is returning SERVFAIL responses at > 0.5 rps for 5 minutes.
+              Possible causes: NetworkPolicy blocking, upstream DNS down, or misconfigured zone.
+
+    - name: lark-adapter.alerts
+      rules:
+        - alert: LarkAlertAdapterDown
+          expr: |
+            kube_pod_status_ready{namespace="monitoring",pod=~"lark-alert-adapter.*",condition="true"} == 0
+          for: 3m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Lark Alert Adapter is down"
+            description: |
+              Lark Alert Adapter pod is not ready. All Prometheus alerts will fail
+              to reach Lark. Check pod status: kubectl get pods -n monitoring -l app=lark-alert-adapter
+
+    - name: capacity.alerts
+      rules:
+        - alert: ClusterMemoryUsageHigh
+          expr: |
+            (1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) > 0.80
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Cluster memory usage > 80% ({{ $value | humanizePercentage }})"
+            description: |
+              Total cluster memory utilization is high.
+              Current: 3 nodes × 4GB = 12GB total.
+              Consider adding a worker node or increasing RAM.
+        - alert: ClusterCPUUsageHigh
+          expr: |
+            (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 0.80
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Cluster CPU usage > 80% ({{ $value | humanizePercentage }})"
+            description: "Average CPU utilization across all nodes is high. Consider scaling."
+        - alert: PodCapacityLow
+          expr: |
+            sum(kube_node_status_allocatable{resource="pods"}) - sum(kube_pod_info) < 20
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Less than 20 pod slots remaining ({{ $value }} free)"
+            description: "Cluster is running low on pod capacity. Default K3s limit is 110 pods/node."
+
+    - name: loki.alerts
+      rules:
+        - alert: LokiDiskUsageHigh
+          expr: |
+            (
+              kubelet_volume_stats_used_bytes{namespace="monitoring",persistentvolumeclaim=~".*loki.*"}
+              /
+              kubelet_volume_stats_capacity_bytes{namespace="monitoring",persistentvolumeclaim=~".*loki.*"}
+            ) > 0.80
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Loki PVC usage > 80% ({{ $value | humanizePercentage }})"
+            description: |
+              Loki storage is filling up. Current retention is 168h (7 days).
+              Consider reducing retention or expanding PVC.
+        - alert: LokiDiskUsageCritical
+          expr: |
+            (
+              kubelet_volume_stats_used_bytes{namespace="monitoring",persistentvolumeclaim=~".*loki.*"}
+              /
+              kubelet_volume_stats_capacity_bytes{namespace="monitoring",persistentvolumeclaim=~".*loki.*"}
+            ) > 0.90
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Loki PVC usage > 90% ({{ $value | humanizePercentage }})"
+            description: "Loki will stop ingesting logs soon. Expand PVC or reduce retention immediately."
+
+    - name: disk.alerts
+      rules:
+        - alert: NodeDiskUsageWarning
+          expr: |
+            (
+              (node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}
+                - node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"})
+              /
+              node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}
+            ) > 0.75
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Node {{ $labels.instance }} disk > 75% ({{ $value | humanizePercentage }})"
+            description: |
+              Root filesystem usage has been above 75% for 15 minutes.
+              Consider cleaning up or expanding disk.
+              Eviction threshold is usually ~85%.
+        - alert: NodeDiskUsageCritical
+          expr: |
+            (
+              (node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}
+                - node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"})
+              /
+              node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"}
+            ) > 0.85
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ $labels.instance }} disk > 85% ({{ $value | humanizePercentage }})"
+            description: |
+              Kubelet eviction threshold imminent. Pods may be evicted.
+              Clean up images/logs or expand disk immediately.
+
+    - name: prometheus.alerts
+      rules:
+        - alert: PrometheusNoActiveTargets
+          expr: prometheus_sd_discovered_targets == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Prometheus has 0 active targets"
+            description: |
+              Prometheus cannot discover any scrape targets. This usually means
+              it cannot reach the API server for service discovery.
+              Check: NetworkPolicy egress rules, kube-router, k3s-agent status.
+
+    # High-level summary alerts — fire ONE clear signal instead of dozens of
+    # per-target TargetDown messages. Used as inhibit sources (see alertmanager
+    # inhibit_rules) so that when the whole cluster/a node is down, the noisy
+    # child alerts are suppressed.
+    - name: cluster-summary.alerts
+      rules:
+        - alert: ClusterControlPlaneDown
+          # No node-exporter on any node is reporting => whole cluster likely down
+          # (e.g. both Proxmox hosts rebooted and VMs did not autostart).
+          expr: absent(up{job="node-exporter"} == 1)
+          for: 3m
+          labels:
+            severity: critical
+            scope: cluster
+          annotations:
+            summary: "CLUSTER DOWN — no nodes reporting metrics"
+            description: |
+              No node-exporter target is up across the entire cluster.
+              Most likely the whole k3s cluster is down. Check Proxmox hosts
+              (pve01/pve02) and that VMs are running:
+                ssh root@10.0.1.1 'qm list'
+              VMs now have onboot=1; if they are stopped, start master first.
+        - alert: MultipleNodesDown
+          expr: count(up{job="node-exporter"} == 0) >= 2
+          for: 3m
+          labels:
+            severity: critical
+            scope: cluster
+          annotations:
+            summary: "{{ $value }} nodes are down"
+            description: "Two or more nodes stopped reporting. Possible host/power event."
+        - alert: SingleNodeDown
+          expr: count(up{job="node-exporter"} == 0) == 1
+          for: 5m
+          labels:
+            severity: warning
+            scope: node
+          annotations:
+            summary: "One node is down ({{ $value }} node not reporting)"
+            description: |
+              A single node stopped reporting node-exporter metrics.
+              Note: worker-01 host-port (9100/10250) is a known issue
+              (systemd k3s/k3s-agent unit conflict) — see incident 2026-06-04.

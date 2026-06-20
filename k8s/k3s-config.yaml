@@ -1,0 +1,20 @@
+# K3s server config - master node
+# /etc/rancher/k3s/config.yaml
+# Requires: systemctl restart k3s after changes
+
+# Disk cleanup (incident: 2026-05-09-worker-nodes-disk-full.md)
+kubelet-arg:
+  - "image-gc-high-threshold=70"
+  - "image-gc-low-threshold=50"
+
+# Secrets encryption at rest (AES-CBC, stored in kine/SQLite)
+# Key file auto-generated at /var/lib/rancher/k3s/server/cred/encryption-config.json
+secrets-encryption: true
+
+# Audit logging (policy: /var/lib/rancher/k3s/server/audit-policy.yaml)
+kube-apiserver-arg:
+  - "audit-log-path=/var/lib/rancher/k3s/server/logs/audit.log"
+  - "audit-policy-file=/var/lib/rancher/k3s/server/audit-policy.yaml"
+  - "audit-log-maxage=30"
+  - "audit-log-maxbackup=10"
+  - "audit-log-maxsize=100"

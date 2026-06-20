@@ -1,0 +1,1 @@
+# Zabbix standalone manifests placeholder

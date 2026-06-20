@@ -1,0 +1,23 @@
+# Vault standalone with file storage (persistent via PVC)
+# Replaces dev mode (inmem) which lost all config on pod restart.
+# Apply: helm upgrade vault hashicorp/vault -n vault -f helm/vault/values.yaml
+injector:
+  enabled: true
+server:
+  dataStorage:
+    enabled: true
+    size: 1Gi
+    storageClass: local-path
+    mountPath: /vault/data
+  standalone:
+    enabled: true
+    config: |
+      ui = true
+      listener "tcp" {
+        address     = "[::]:8200"
+        cluster_address = "[::]:8201"
+        tls_disable = 1
+      }
+      storage "file" {
+        path = "/vault/data"
+      }

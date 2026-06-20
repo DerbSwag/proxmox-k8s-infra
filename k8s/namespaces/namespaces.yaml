@@ -1,0 +1,108 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-04-03T06:02:29Z"
+    labels:
+      kubernetes.io/metadata.name: argocd
+    name: argocd
+    resourceVersion: "246132"
+    uid: 087219bb-f21d-425c-a403-f05a22a5d994
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-03-28T04:41:02Z"
+    labels:
+      kubernetes.io/metadata.name: default
+    name: default
+    resourceVersion: "18"
+    uid: 8c81db9f-4551-4ad9-916e-8ffaa64457bc
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-03-28T04:41:02Z"
+    labels:
+      kubernetes.io/metadata.name: kube-node-lease
+    name: kube-node-lease
+    resourceVersion: "25"
+    uid: 59f7b840-615c-4f9f-b5e8-4790f3f1777c
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-03-28T04:41:02Z"
+    labels:
+      kubernetes.io/metadata.name: kube-public
+    name: kube-public
+    resourceVersion: "13"
+    uid: 15d5fc9f-71fa-47b0-b4f0-5f253e1234ab
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-03-28T04:41:02Z"
+    labels:
+      kubernetes.io/metadata.name: kube-system
+    name: kube-system
+    resourceVersion: "5"
+    uid: ce2afe0f-1fe3-4766-9d8c-483e25f97588
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-03-28T06:49:34Z"
+    labels:
+      kubernetes.io/metadata.name: monitoring
+    name: monitoring
+    resourceVersion: "5146"
+    uid: 6cf61b7b-19b8-4253-8e45-43b8d6d62129
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+- apiVersion: v1
+  kind: Namespace
+  metadata:
+    creationTimestamp: "2026-03-28T04:52:21Z"
+    labels:
+      kubernetes.io/metadata.name: zabbix
+    name: zabbix
+    resourceVersion: "1047"
+    uid: afb5438e-2d40-4b2d-a26d-47283978283e
+  spec:
+    finalizers:
+    - kubernetes
+  status:
+    phase: Active
+kind: List
+metadata:
+  resourceVersion: ""
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: infra

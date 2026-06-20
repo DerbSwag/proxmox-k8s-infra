@@ -1,0 +1,20 @@
+# Secrets - NEVER commit these
+*.secret.yaml
+*-secret.yaml
+secrets/
+.env
+*.env
+
+# Helm cache
+.helm/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfvars
+terraform/.terraform.lock.hcl

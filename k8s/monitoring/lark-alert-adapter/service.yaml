@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lark-alert-adapter
+  namespace: monitoring
+  labels:
+    app: lark-alert-adapter
+spec:
+  selector:
+    app: lark-alert-adapter
+  ports:
+  - port: 5001
+    targetPort: 5001
+    name: http
+  type: ClusterIP

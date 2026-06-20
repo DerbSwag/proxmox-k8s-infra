@@ -1,0 +1,94 @@
+---
+- name: Base configuration for all nodes
+  hosts: k3s_cluster
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install base packages
+      apt:
+        name:
+          - curl
+          - wget
+          - vim
+          - htop
+          - net-tools
+          - open-iscsi
+          - nfs-common
+        state: present
+
+    - name: Disable swap
+      command: swapoff -a
+      changed_when: false
+
+    - name: Remove swap from fstab
+      lineinfile:
+        path: /etc/fstab
+        regexp: '\sswap\s'
+        state: absent
+
+- name: Install k3s master
+  hosts: master
+  vars:
+    k3s_version: "v1.34.5+k3s1"
+  tasks:
+    - name: Check if k3s is installed
+      stat:
+        path: /usr/local/bin/k3s
+      register: k3s_bin
+
+    - name: Install k3s server
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{ k3s_version }} sh -s - server \
+          --disable traefik \
+          --write-kubeconfig-mode 644
+      when: not k3s_bin.stat.exists
+
+    - name: Wait for k3s to be ready
+      command: k3s kubectl get nodes
+      register: result
+      until: result.rc == 0
+      retries: 10
+      delay: 10
+      changed_when: false
+
+    - name: Get node token
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: node_token
+
+    - name: Store token as fact
+      set_fact:
+        k3s_token: "{{ node_token.content | b64decode | trim }}"
+
+- name: Install k3s workers
+  hosts: workers
+  vars:
+    k3s_version: "v1.34.5+k3s1"
+    k3s_master_ip: "10.0.1.10"
+  tasks:
+    - name: Check if k3s-agent is installed
+      stat:
+        path: /usr/local/bin/k3s
+      register: k3s_bin
+
+    - name: Install k3s agent
+      shell: |
+        curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{ k3s_version }} sh -s - agent \
+          --server https://{{ k3s_master_ip }}:6443 \
+          --token {{ hostvars['k8s-master']['k3s_token'] }}
+      when: not k3s_bin.stat.exists
+
+- name: Verify cluster
+  hosts: master
+  tasks:
+    - name: Get cluster nodes
+      command: k3s kubectl get nodes -o wide
+      register: nodes
+      changed_when: false
+
+    - name: Show cluster status
+      debug:
+        msg: "{{ nodes.stdout_lines }}"

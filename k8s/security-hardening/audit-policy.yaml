@@ -1,0 +1,25 @@
+apiVersion: audit.k8s.io/v1
+kind: Policy
+rules:
+  - level: Metadata
+    resources:
+      - group: ""
+        resources: ["secrets"]
+  - level: RequestResponse
+    resources:
+      - group: "rbac.authorization.k8s.io"
+        resources: ["clusterroles", "clusterrolebindings", "roles", "rolebindings"]
+  - level: Request
+    resources:
+      - group: ""
+        resources: ["pods/exec", "pods/attach"]
+  - level: Metadata
+    resources:
+      - group: ""
+        resources: ["nodes", "namespaces"]
+  - level: None
+    resources:
+      - group: ""
+        resources: ["endpoints", "services/status"]
+    users: ["system:kube-proxy"]
+  - level: Metadata

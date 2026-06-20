@@ -1,0 +1,93 @@
+alertmanager:
+  config:
+    global:
+      resolve_timeout: 5m
+    inhibit_rules:
+      - source_matchers:
+          - alertname="KubeNodeNotReady"
+        target_matchers:
+          - severity=~"warning|critical"
+        equal: [node]
+      - source_matchers:
+          - alertname="CoreDNSNoHealthyPods"
+        target_matchers:
+          - alertname=~"CoreDNS.*|KubeJobFailed|KubePodCrashLooping"
+      - source_matchers:
+          - severity="critical"
+        target_matchers:
+          - severity="warning"
+        equal: [alertname, namespace]
+      # When the whole cluster is down, only send ClusterControlPlaneDown —
+      # suppress the flood of per-target/per-node child alerts.
+      - source_matchers:
+          - alertname="ClusterControlPlaneDown"
+        target_matchers:
+          - alertname=~"TargetDown|MultipleNodesDown|SingleNodeDown|KubeletDown|CoreDNS.*|PrometheusNoActiveTargets|LarkAlertAdapterDown"
+      # When multiple nodes are down, suppress single-node and per-target noise.
+      - source_matchers:
+          - alertname="MultipleNodesDown"
+        target_matchers:
+          - alertname=~"TargetDown|SingleNodeDown"
+    receivers:
+    - name: "null"
+    - name: lark
+      webhook_configs:
+      - send_resolved: true
+        url: http://lark-alert-adapter.monitoring.svc:5001
+    route:
+      group_by:
+      - alertname
+      - namespace
+      group_interval: 5m
+      group_wait: 30s
+      receiver: lark
+      repeat_interval: 4h
+      routes:
+      - matchers:
+        - alertname="Watchdog"
+        receiver: "null"
+      - matchers:
+        - alertname="InfoInhibitor"
+        receiver: "null"
+      - matchers:
+        - alertname=~"KubeControllerManagerDown|KubeProxyDown|KubeSchedulerDown"
+        receiver: "null"
+      # Known issue: worker-01 host-port (9100/10250) blocked by k3s/k3s-agent
+      # unit conflict (incident 2026-06-04). Don't spam every 4h — remind weekly.
+      - matchers:
+        - alertname="TargetDown"
+        receiver: lark
+        repeat_interval: 168h
+        group_by: [alertname]
+      - continue: false
+        receiver: lark
+  service:
+    nodePort: 31093
+    type: NodePort
+defaultRules:
+  rules:
+    kubeControllerManager: false
+    kubeProxy: false
+    kubeSchedulerAlerting: false
+grafana:
+  adminPassword: admin
+  service:
+    nodePort: 31000
+    type: NodePort
+kubeControllerManager:
+  enabled: false
+kubeProxy:
+  enabled: false
+kubeScheduler:
+  enabled: false
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: 'linux-lab'
+        static_configs:
+          - targets: ['10.0.1.20:9100']
+            labels:
+              instance: 'linux-lab'
+  service:
+    nodePort: 31090
+    type: NodePort

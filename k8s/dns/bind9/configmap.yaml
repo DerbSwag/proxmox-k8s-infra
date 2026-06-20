@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bind9-config
+  namespace: infra
+data:
+  named.conf.local: |
+    zone "company.local" {
+        type master;
+        file "/etc/bind/zones/db.company.local";
+    };
+    zone "101.168.192.in-addr.arpa" {
+        type master;
+        file "/etc/bind/zones/db.10.0.1";
+    };
+  db.company.local: |
+    $TTL    604800
+    @       IN      SOA     dns-server.company.local. admin.company.local. (
+                                  2024040302         ; Serial
+                             604800         ; Refresh
+                              86400         ; Retry
+                            2419200         ; Expire
+                             604800 )       ; Negative Cache TTL
+    @       IN      NS      dns-server.company.local.
+    dns-server      IN      A       10.0.1.x
+    k8s-master      IN      A       10.0.1.10
+    k8s-worker-01   IN      A       10.0.1.11
+    k8s-worker-02   IN      A       10.0.1.12
+    pve01           IN      A       10.0.1.1
+    pve02           IN      A       10.0.1.2
+    grafana         IN      A       10.0.1.10
+    prometheus      IN      A       10.0.1.10
+    zabbix          IN      A       10.0.1.10
+    argocd          IN      A       10.0.1.10
+  db.10.0.1: |
+    $TTL    604800
+    @       IN      SOA     dns-server.company.local. admin.company.local. (
+                                  2024040301         ; Serial
+                             604800         ; Refresh
+                              86400         ; Retry
+                            2419200         ; Expire
+                             604800 )       ; Negative Cache TTL
+    @       IN      NS      dns-server.company.local.
+    143     IN      PTR     dns-server.company.local.
+    95      IN      PTR     pve01.company.local.
+    96      IN      PTR     pve02.company.local.
+    140     IN      PTR     k8s-master.company.local.
+    141     IN      PTR     k8s-worker-01.company.local.
+    142     IN      PTR     k8s-worker-02.company.local.

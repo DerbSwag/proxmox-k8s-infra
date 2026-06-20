@@ -1,0 +1,8 @@
+# K3s worker (agent) config
+# /etc/rancher/k3s/config.yaml
+# Requires: systemctl restart k3s-agent after changes
+
+# Disk cleanup (incident: 2026-05-09-worker-nodes-disk-full.md)
+kubelet-arg:
+  - "image-gc-high-threshold=70"
+  - "image-gc-low-threshold=50"

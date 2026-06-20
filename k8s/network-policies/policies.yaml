@@ -1,0 +1,102 @@
+---
+# Default deny all ingress in monitoring namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: monitoring
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow monitoring namespace internal traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-internal
+  namespace: monitoring
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow NodePort access to monitoring services
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-nodeport
+  namespace: monitoring
+spec:
+  podSelector: {}
+  ingress:
+    - from: []
+      ports:
+        - port: 9090
+        - port: 3000
+        - port: 9093
+        - port: 5001
+  policyTypes:
+    - Ingress
+---
+# Default deny all ingress in zabbix namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: zabbix
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow zabbix internal + NodePort
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-zabbix
+  namespace: zabbix
+spec:
+  podSelector: {}
+  ingress:
+    - from:
+        - podSelector: {}
+    - from: []
+      ports:
+        - port: 8080
+  policyTypes:
+    - Ingress
+---
+# Default deny ingress in infra namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: infra
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+---
+# Allow DNS queries to bind9
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: infra
+spec:
+  podSelector:
+    matchLabels:
+      app: bind9
+  ingress:
+    - from: []
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+  policyTypes:
+    - Ingress

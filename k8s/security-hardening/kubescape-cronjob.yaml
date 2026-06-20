@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kubescape-monthly-scan
+  namespace: monitoring
+spec:
+  schedule: "0 3 1 * *"  # 1st of every month at 03:00
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: kubescape
+              image: quay.io/kubescape/kubescape:v3.0.3
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  kubescape scan --format json --output /tmp/report.json
+                  SCORE=$(cat /tmp/report.json | grep -o '"complianceScore":[0-9.]*' | head -1 | cut -d: -f2)
+                  FAILED=$(cat /tmp/report.json | grep -o '"totalFailed":[0-9]*' | head -1 | cut -d: -f2)
+                  # Send summary to Lark via alert adapter
+                  curl -s -X POST http://lark-alert-adapter.monitoring.svc:5001 \
+                    -H "Content-Type: application/json" \
+                    -d "{\"alerts\":[{\"status\":\"firing\",\"labels\":{\"alertname\":\"KubescapeMonthlyReport\",\"severity\":\"info\"},\"annotations\":{\"summary\":\"Kubescape scan: score ${SCORE}%, ${FAILED} failed controls\"}}]}"
+              resources:
+                requests:
+                  memory: 256Mi
+                  cpu: 100m
+                limits:
+                  memory: 512Mi
+                  cpu: 500m
+          serviceAccountName: kubescape-scanner
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubescape-scanner
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubescape-scanner
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: view
+subjects:
+  - kind: ServiceAccount
+    name: kubescape-scanner
+    namespace: monitoring

@@ -1,0 +1,48 @@
+---
+- name: Install Zabbix Agent on k8s nodes
+  hosts: k3s_cluster
+  vars:
+    zabbix_server: "10.0.1.10"
+    zabbix_server_active: "10.0.1.10"
+    zabbix_agent_allow: "10.0.1.10,10.42.0.0/16"
+  tasks:
+    - name: Download Zabbix repo package
+      get_url:
+        url: https://repo.zabbix.com/zabbix/7.0/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.0+debian12_all.deb
+        dest: /tmp/zabbix-release.deb
+
+    - name: Install Zabbix repo
+      apt:
+        deb: /tmp/zabbix-release.deb
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Zabbix agent
+      apt:
+        name: zabbix-agent
+        state: present
+
+    - name: Configure Zabbix agent
+      template:
+        content: |
+          Server={{ zabbix_agent_allow }}
+          ServerActive={{ zabbix_server_active }}
+          Hostname={{ inventory_hostname }}
+          EnableRemoteCommands=1
+          LogFile=/var/log/zabbix/zabbix_agentd.log
+        dest: /etc/zabbix/zabbix_agentd.conf
+      notify: restart zabbix-agent
+
+    - name: Enable and start Zabbix agent
+      systemd:
+        name: zabbix-agent
+        enabled: yes
+        state: started
+
+  handlers:
+    - name: restart zabbix-agent
+      systemd:
+        name: zabbix-agent
+        state: restarted

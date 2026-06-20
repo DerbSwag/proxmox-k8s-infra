@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  pullPolicy: Always
+  repository: ghcr.io/derbswag/devops-api
+  tag: latest
+
+service:
+  type: NodePort
+  nodePort: 30627

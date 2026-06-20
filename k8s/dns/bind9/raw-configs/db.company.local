@@ -1,0 +1,24 @@
+$TTL    604800
+@       IN      SOA     dns-server.company.local. admin.company.local. (
+                              2024040302         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+; Name servers
+@       IN      NS      dns-server.company.local.
+
+; A records
+dns-server      IN      A       10.0.1.143
+k8s-master      IN      A       10.0.1.140
+k8s-worker-01   IN      A       10.0.1.141
+k8s-worker-02   IN      A       10.0.1.142
+pve01           IN      A       10.0.1.95
+pve02           IN      A       10.0.1.96
+
+; Services
+grafana         IN      A       10.0.1.140
+prometheus      IN      A       10.0.1.140
+zabbix          IN      A       10.0.1.140
+argocd          IN      A       10.0.1.140

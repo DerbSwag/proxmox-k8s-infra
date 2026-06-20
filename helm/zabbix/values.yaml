@@ -1,0 +1,23 @@
+postgresql:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 10Gi
+    storageClass: local-path
+zabbixServer:
+  enabled: true
+  podSecurityContext:
+    runAsUser: 1997
+    runAsGroup: 1995
+    fsGroup: 1995
+    runAsNonRoot: true
+  extraEnv:
+    - name: ZBX_VALUECACHESIZE
+      value: "64M"
+    - name: ZBX_CACHESIZE
+      value: "64M"
+zabbixWeb:
+  enabled: true
+  service:
+    nodePort: 30080
+    type: NodePort

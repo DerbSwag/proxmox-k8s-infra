@@ -1,0 +1,58 @@
+# Vault auto-unseal for the single-node lab Vault (standalone, file storage).
+# Standalone Vault starts SEALED after every pod restart/power event. This CronJob
+# unseals it automatically using a key stored in a k8s Secret.
+#
+# ⚠️ SECURITY: the unseal key lives in a plain Secret in the `vault` namespace.
+# Anyone who can read that Secret can unseal Vault. Acceptable for a single-node LAB.
+# Do NOT use this pattern in production — use KMS/transit auto-unseal instead.
+#
+# The Secret `vault-unseal` is created out-of-band (NOT in git) from
+# ~/vault-init-keys.json:
+#   UNSEAL=$(python3 -c "import json;print(json.load(open('/home/devops/vault-init-keys.json'))['unseal_keys_b64'][0])")
+#   kubectl create secret generic vault-unseal -n vault --from-literal=key="$UNSEAL"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-unsealer
+  namespace: vault
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: vault-auto-unseal
+  namespace: vault
+spec:
+  schedule: "*/2 * * * *"        # every 2 minutes
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 60
+      template:
+        spec:
+          serviceAccountName: vault-unsealer
+          restartPolicy: Never
+          containers:
+            - name: unseal
+              image: hashicorp/vault:1.21.2
+              env:
+                - name: VAULT_ADDR
+                  value: "http://vault.vault.svc:8200"
+                - name: UNSEAL_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: vault-unseal
+                      key: key
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  # no-op if already unsealed
+                  if vault status -format=json 2>/dev/null | grep -q '"sealed": *false'; then
+                    echo "vault already unsealed"; exit 0
+                  fi
+                  echo "vault sealed -> unsealing"
+                  vault operator unseal "$UNSEAL_KEY" >/dev/null
+                  vault status -format=json | grep '"sealed"'
