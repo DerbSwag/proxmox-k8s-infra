@@ -70,7 +70,7 @@ defaultRules:
     kubeProxy: false
     kubeSchedulerAlerting: false
 grafana:
-  adminPassword: admin
+  adminPassword: CHANGE_ME
   service:
     nodePort: 31000
     type: NodePort
