@@ -24,7 +24,7 @@ Zabbix trigger actions route to per-OS Lark groups via separate webhook media ty
 | Forward to Lark CCTV (id 10)   | CCTV (gid 23)        | Lark_CCTV (71) | enabled |
 | Alert to Lark (id 7) / Forward to Lark Linux (id 8) | Zabbix/Linux servers | Lark_Linux (70) | disabled |
 
-**Key fix (2026-06-16):** Previously all three media types (70/71/72) pointed to the **same** Lark webhook, so Windows/CCTV/Linux alerts all landed in one group despite the separate actions. Pointed `Lark_Windows` (media type 72) to a **dedicated Windows Lark group webhook** so Windows-host alerts (GSTAR/M-SERVER/HRMI/FILE-SERVER/APS) no longer mix with k8s/Linux noise.
+**Key fix (2026-06-16):** Previously all three media types (70/71/72) pointed to the **same** Lark webhook, so Windows/CCTV/Linux alerts all landed in one group despite the separate actions. Pointed `Lark_Windows` (media type 72) to a **dedicated Windows Lark group webhook** so Windows-host alerts (GSTAR/SRV-ERP/HRMI/SRV-FILE/APS) no longer mix with k8s/Linux noise.
 
 - Webhook URLs live only in the Zabbix DB (`media_type_param`, name=`URL`) — NOT committed to git (secret).
 - To re-point a group: update `media_type_param.value` for the relevant mediatypeid (70=Linux, 71=CCTV, 72=Windows).
@@ -39,7 +39,7 @@ Zabbix trigger actions route to per-OS Lark groups via separate webhook media ty
 
 ## Known Issues
 
-- **APS-SERVER (10.0.2.11)**: Agent `Server=` config needs `10.0.1.11` added (Zabbix server SNAT IP). Requires RDP access to fix.
-- **GSTAR-SERVER (10.0.3.23)**: Windows Firewall blocks 10.0.1.x/24. Firewall rule added on 2026-05-15 but agent config also needs update.
-- **Disk space alerts**: FILE-SERVER D: drive >90% — needs cleanup by server admin.
-- **M-SERVER (10.0.2.9)** (checked 2026-06-08): host is UP (ping + SMB/445 OK) but Zabbix agent (10050) and RDP (3389) are CLOSED. Routing to the 100.x VLAN is fine (APS-SERVER 100.11:10050 reachable). Zabbix DB shows `available=2`, error "cannot establish TCP connection to 10.0.2.9:10050: timed out". Root cause is on the host: Zabbix Agent service stopped/crashed or Windows Firewall blocking 10050+3389. Needs console/physical access (RDP also down) — server admin to start "Zabbix Agent" service and allow inbound 10050.
+- **SRV-PLAN (10.0.2.11)**: Agent `Server=` config needs `10.0.1.11` added (Zabbix server SNAT IP). Requires RDP access to fix.
+- **SRV-APP01 (10.0.3.23)**: Windows Firewall blocks 10.0.1.x/24. Firewall rule added on 2026-05-15 but agent config also needs update.
+- **Disk space alerts**: SRV-FILE D: drive >90% — needs cleanup by server admin.
+- **SRV-ERP (10.0.2.9)** (checked 2026-06-08): host is UP (ping + SMB/445 OK) but Zabbix agent (10050) and RDP (3389) are CLOSED. Routing to the 100.x VLAN is fine (SRV-PLAN 100.11:10050 reachable). Zabbix DB shows `available=2`, error "cannot establish TCP connection to 10.0.2.9:10050: timed out". Root cause is on the host: Zabbix Agent service stopped/crashed or Windows Firewall blocking 10050+3389. Needs console/physical access (RDP also down) — server admin to start "Zabbix Agent" service and allow inbound 10050.

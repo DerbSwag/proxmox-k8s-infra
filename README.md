@@ -177,11 +177,11 @@ Push image to GHCR → ArgoCD Image Updater detects new tag (every 2min)
 | k8s-worker-02 | Linux Zabbix Agent | 10.0.1.12 |
 | pve01 | Proxmox | 10.0.1.1 |
 | pve02 | Proxmox | 10.0.1.2 |
-| FILE-SERVER | Windows | 10.0.3.10 |
-| GSTAR-SERVER | Windows | 10.0.3.23 |
-| M-SERVER | Windows | 10.0.2.9 |
-| APS-SERVER | Windows | 10.0.2.11 |
-| HRMI-SERVER | Windows | 10.0.2.13 |
+| SRV-FILE | Windows | 10.0.3.10 |
+| SRV-APP01 | Windows | 10.0.3.23 |
+| SRV-ERP | Windows | 10.0.2.9 |
+| SRV-PLAN | Windows | 10.0.2.11 |
+| SRV-HR | Windows | 10.0.2.13 |
 | CCTV-01 | Hikvision SNMP v2c | 10.0.3.9 |
 | CCTV-02 | Hikvision SNMP v2c | 10.0.1.x |
 | CCTV-03 | Hikvision SNMP v2c | 10.0.2.139 |

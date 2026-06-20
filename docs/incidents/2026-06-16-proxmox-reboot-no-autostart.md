@@ -42,5 +42,5 @@ Both Proxmox hosts (pve01 + pve02) rebooted ~1d4h before detection (uptime confi
 
 The alert stream was noisy/ineffective:
 - Real outage (whole cluster down) was buried under repeated identical TargetDown messages with no "cluster down" summary.
-- GoogleUpdater flapping (now suppressed) and Windows agent alerts (M-SERVER, HRMI, FILE-SERVER) mixed in.
+- GoogleUpdater flapping (now suppressed) and Windows agent alerts (SRV-ERP, HRMI, SRV-FILE) mixed in.
 - Recommend: add a high-level "cluster/control-plane down" alert, group/throttle repeats, and route Windows-host alerts separately from k8s alerts.

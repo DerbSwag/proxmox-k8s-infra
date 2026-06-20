@@ -25,8 +25,8 @@ Disabled triggers สำหรับ services ที่ไม่สำคัญ:
 
 | Host | Result | Action Needed |
 |------|--------|---------------|
-| GSTAR-SERVER (10.0.3.23) | 100% packet loss | เครื่องปิด/network down — เช็คที่หน้างาน |
-| M-SERVER (10.0.2.9) | Ping OK, agent down | RDP → restart Zabbix Agent service |
+| SRV-APP01 (10.0.3.23) | 100% packet loss | เครื่องปิด/network down — เช็คที่หน้างาน |
+| SRV-ERP (10.0.2.9) | Ping OK, agent down | RDP → restart Zabbix Agent service |
 
 ### 4. ✅ Checked k8s-worker-01 Disk
 - Used: **38%** (17G / 47G) — ปกติ, Image GC ทำงานดี
@@ -35,6 +35,6 @@ Disabled triggers สำหรับ services ที่ไม่สำคัญ:
 
 ## Remaining (ต้องทำ manual)
 
-- [ ] GSTAR-SERVER — เช็คที่หน้างานว่าเครื่องเปิดอยู่ไหม
-- [ ] M-SERVER — RDP เข้าไป restart Zabbix Agent
-- [ ] FILE-SERVER — Cleanup disk D: (>90% of 1.8TB)
+- [ ] SRV-APP01 — เช็คที่หน้างานว่าเครื่องเปิดอยู่ไหม
+- [ ] SRV-ERP — RDP เข้าไป restart Zabbix Agent
+- [ ] SRV-FILE — Cleanup disk D: (>90% of 1.8TB)
