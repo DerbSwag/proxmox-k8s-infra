@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Fix Zabbix problems: set SNMP macro, suppress noise alerts"""
+import os
 import urllib.request, json, sys
 
-URL = "http://localhost:30080/api_jsonrpc.php"
+URL = os.environ.get("ZBX_URL", "http://localhost:30080/api_jsonrpc.php")
+USER = os.environ.get("ZBX_USER")
+PASSWORD = os.environ.get("ZBX_PASS")
 REQ_ID = 0
+
+if not USER or not PASSWORD:
+    raise SystemExit("Set ZBX_USER and ZBX_PASS before running this script.")
 
 def api(method, params, token=None):
     global REQ_ID
@@ -21,7 +27,7 @@ def api(method, params, token=None):
     return result.get("result")
 
 # Login
-token = api("user.login", {"username": "Admin", "password": "zabbix"})
+token = api("user.login", {"username": USER, "password": PASSWORD})
 if not token:
     sys.exit(1)
 print("✅ Logged in to Zabbix API\n")

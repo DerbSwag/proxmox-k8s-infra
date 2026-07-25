@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
+import os
 import urllib.request, json
 
-URL = "http://localhost:30080/api_jsonrpc.php"
+URL = os.environ.get("ZBX_URL", "http://localhost:30080/api_jsonrpc.php")
+USER = os.environ.get("ZBX_USER")
+PASSWORD = os.environ.get("ZBX_PASS")
+
+if not USER or not PASSWORD:
+    raise SystemExit("Set ZBX_USER and ZBX_PASS before running this script.")
 
 def api(method, params, token=None):
     body = {"jsonrpc": "2.0", "method": method, "params": params, "id": 1}
@@ -12,7 +18,7 @@ def api(method, params, token=None):
     resp = urllib.request.urlopen(req)
     return json.loads(resp.read())["result"]
 
-token = api("user.login", {"username": "Admin", "password": "zabbix"})
+token = api("user.login", {"username": USER, "password": PASSWORD})
 
 # Get all current problems
 problems = api("problem.get", {"recent": True, "sortfield": "eventid", "sortorder": "DESC", "limit": 50}, token)

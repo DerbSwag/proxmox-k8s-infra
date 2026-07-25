@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/DerbSwag/company-lab-infra
+    repoURL: https://github.com/DerbSwag/proxmox-k8s-infra
     targetRevision: HEAD
     path: k8s/monitoring/lark-alert-adapter
   destination:
@@ -30,7 +30,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/DerbSwag/company-lab-infra
+    repoURL: https://github.com/DerbSwag/proxmox-k8s-infra
     targetRevision: HEAD
     path: helm/fastapi
     helm:
@@ -53,7 +53,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/DerbSwag/company-lab-infra
+    repoURL: https://github.com/DerbSwag/proxmox-k8s-infra
     targetRevision: HEAD
     path: k8s/network-policies
   destination:
@@ -71,7 +71,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/DerbSwag/company-lab-infra
+    repoURL: https://github.com/DerbSwag/proxmox-k8s-infra
     targetRevision: HEAD
     path: k8s/monitoring
     directory:
@@ -92,7 +92,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/DerbSwag/company-lab-infra
+    repoURL: https://github.com/DerbSwag/proxmox-k8s-infra
     targetRevision: HEAD
     path: k8s/dns/bind9
   destination:
@@ -111,7 +111,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/DerbSwag/company-lab-infra
+    repoURL: https://github.com/DerbSwag/proxmox-k8s-infra
     targetRevision: HEAD
     path: k8s/security-hardening
     directory:
@@ -133,7 +133,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/DerbSwag/company-lab-infra
+    repoURL: https://github.com/DerbSwag/proxmox-k8s-infra
     targetRevision: HEAD
     path: k8s/monitoring
     directory:

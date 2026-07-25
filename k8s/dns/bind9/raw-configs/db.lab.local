@@ -1,5 +1,5 @@
 $TTL    604800
-@       IN      SOA     dns-server.company.local. admin.company.local. (
+@       IN      SOA     dns-server.lab.local. admin.lab.local. (
                               2024040302         ; Serial
                          604800         ; Refresh
                           86400         ; Retry
@@ -7,7 +7,7 @@ $TTL    604800
                          604800 )       ; Negative Cache TTL
 ;
 ; Name servers
-@       IN      NS      dns-server.company.local.
+@       IN      NS      dns-server.lab.local.
 
 ; A records
 dns-server      IN      A       10.0.1.143

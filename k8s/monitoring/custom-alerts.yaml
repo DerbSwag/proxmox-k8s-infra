@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: company-lab-custom-alerts
+  name: proxmox-k8s-lab-custom-alerts
   namespace: monitoring
   labels:
     release: monitoring  # must match kube-prometheus-stack release name for rule discovery

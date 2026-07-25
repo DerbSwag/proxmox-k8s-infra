@@ -1,6 +1,6 @@
-# Company Lab Infrastructure 🏢 [![Validate](https://github.com/DerbSwag/company-lab-infra/actions/workflows/validate.yml/badge.svg)](https://github.com/DerbSwag/company-lab-infra/actions/workflows/validate.yml)
+# Proxmox K8s Infrastructure Lab [![Validate](https://github.com/DerbSwag/proxmox-k8s-infra/actions/workflows/validate.yml/badge.svg)](https://github.com/DerbSwag/proxmox-k8s-infra/actions/workflows/validate.yml)
 
-GitOps repository for Company Lab (Proxmox + k3s cluster).
+Sanitized GitOps portfolio repository for a Proxmox + k3s infrastructure lab.
 
 ---
 
@@ -38,7 +38,7 @@ GitOps repository for Company Lab (Proxmox + k3s cluster).
 
 | Component | Namespace | Access | Notes |
 |-----------|-----------|--------|-------|
-| BIND9 DNS | infra | :30053 (UDP) / :30054 (TCP) | company.local zone |
+| BIND9 DNS | infra | :30053 (UDP) / :30054 (TCP) | lab.local zone |
 | Zabbix v7.0 | zabbix | :30080 | 14 hosts monitored |
 | Prometheus | monitoring | :31090 | kube-prometheus-stack |
 | Grafana | monitoring | :31000 | admin/<see-secret> |
@@ -55,7 +55,7 @@ GitOps repository for Company Lab (Proxmox + k3s cluster).
 
 ## 🏗️ Repository Structure
 
-    company-lab-infra/
+    proxmox-k8s-infra/
     ├── terraform/
     │   ├── main.tf                  # Proxmox VM provisioning
     │   ├── variables.tf             # VM specs (CPU, RAM, disk, IP)
@@ -103,7 +103,7 @@ GitOps repository for Company Lab (Proxmox + k3s cluster).
     # open https://10.0.1.10:8888
 
     # Web UIs
-    # BIND9 DNS:    nslookup k8s-master.company.local 10.0.1.10 -port=30053
+    # BIND9 DNS:    nslookup k8s-master.lab.local 10.0.1.10 -port=30053
     # Zabbix:       http://10.0.1.10:30080
     # Grafana:      http://10.0.1.10:31000
     # Dashboard:    http://10.0.1.10:31000/d/cluster-overview
@@ -251,7 +251,7 @@ See: `k8s/security-hardening/README.md`
 |------|--------|-------|
 | Zabbix to Lark alert | ✅ Verified | 3 media types (Linux/Windows/CCTV), all sending successfully |
 | False alert suppression | ✅ Verified | KubeProxyDown / KubeControllerManagerDown / KubeSchedulerDown — no longer firing |
-| VPN tunnel Home to Company | ❌ Cancelled | Keep personal and work networks separated |
+| VPN tunnel to private network | ❌ Cancelled | Keep personal and work networks separated |
 
 ---
 
@@ -287,5 +287,5 @@ Troubleshooting guide อยู่ที่ [`docs/runbook.md`](docs/runbook.md)
 - Zabbix agent Server= must include both node IP and pod CIDR (10.0.1.10,10.42.0.0/16)
 - ArgoCD port-forward requires --address 0.0.0.0 for remote access
 - kubectl must be run from k8s-master only
-- BIND9 DNS serves `company.local` zone (forward + reverse)
+- BIND9 DNS serves `lab.local` zone (forward + reverse)
 - ArgoCD Image Updater watches `ghcr.io/derbswag/devops-api` for new tags

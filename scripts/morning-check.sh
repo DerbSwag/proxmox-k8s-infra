@@ -1,5 +1,5 @@
 #!/bin/bash
-# Morning Health Check - Company Lab
+# Morning Health Check - Proxmox K8s Lab
 # Usage: ssh devops@10.0.1.10 'bash -s' < morning-check.sh
 
 echo "=========================================="

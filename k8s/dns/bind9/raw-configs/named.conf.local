@@ -6,12 +6,12 @@
 // organization
 //include "/etc/bind/zones.rfc1918";
 
-zone "company.local" {
+zone "lab.local" {
     type master;
-    file "/etc/bind/zones/db.company.local";
+    file "/etc/bind/zones/db.lab.local";
 };
 
-zone "101.168.192.in-addr.arpa" {
+zone "1.0.10.in-addr.arpa" {
     type master;
     file "/etc/bind/zones/db.10.0.1";
 };	

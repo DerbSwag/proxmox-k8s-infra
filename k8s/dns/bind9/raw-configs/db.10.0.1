@@ -1,0 +1,19 @@
+$TTL    604800
+@       IN      SOA     dns-server.lab.local. admin.lab.local. (
+                              2024040301         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+; Name servers
+@       IN      NS      dns-server.lab.local.
+
+; PTR records
+46      IN      PTR     dns-server.lab.local.
+95      IN      PTR     pve01.lab.local.
+96      IN      PTR     pve02.lab.local.
+140     IN      PTR     k8s-master.lab.local.
+141     IN      PTR     k8s-worker-01.lab.local.
+142     IN      PTR     k8s-worker-02.lab.local.
+

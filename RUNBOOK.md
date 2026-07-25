@@ -1,4 +1,4 @@
-# RUNBOOK — Company Lab Infrastructure
+# RUNBOOK — Proxmox K8s Infrastructure Lab
 
 > Proven procedures — วิธีแก้ปัญหาที่พบบ่อยในคลัสเตอร์
 > Updated: 2026-06-15
@@ -180,15 +180,17 @@ kubectl get app -n argocd
 
 ## 🟢 Add a host to Zabbix (agent or SNMP camera)
 
-**Web:** http://10.0.1.10:30080 (Admin / zabbix)
+**Web:** http://10.0.1.10:30080 (`ZBX_USER` / `ZBX_PASS`)
 
 Fastest = API. From master (reaches the Zabbix web NodePort):
 
 ```bash
 # Agent host (Linux=template 10001, Windows=10081); SNMP camera = Generic by SNMP (10563)
 ZBX=http://localhost:30080/api_jsonrpc.php
+ZBX_USER="${ZBX_USER:?set ZBX_USER}"
+ZBX_PASS="${ZBX_PASS:?set ZBX_PASS}"
 TOKEN=$(curl -s -X POST $ZBX -H 'Content-Type: application/json' \
-  -d '{"jsonrpc":"2.0","method":"user.login","params":{"username":"Admin","password":"zabbix"},"id":1}' \
+  -d "{\"jsonrpc\":\"2.0\",\"method\":\"user.login\",\"params\":{\"username\":\"$ZBX_USER\",\"password\":\"$ZBX_PASS\"},\"id\":1}" \
   | sed -E 's/.*"result":"([^"]+)".*/\1/')
 
 # --- SNMP camera example (Hikvision, v2c community 'public') ---

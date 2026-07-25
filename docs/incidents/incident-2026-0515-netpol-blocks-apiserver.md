@@ -72,7 +72,7 @@ This meant that after the master rebooted and pods restarted, they could never r
 1. Restarted k3s-agent on worker-01 and worker-02, k3s on master
 2. Deleted stuck pods (kube-state-metrics, Grafana, Prometheus, Prometheus Operator, ArgoCD repo-server)
 3. Patched NetworkPolicy `allow-egress-monitoring` to add port 6443 to the `10.0.1.x/24` egress rule
-4. Pushed permanent fix to Git repo: `https://github.com/DerbSwag/company-lab-infra` (commit `35e0bba`)
+4. Pushed permanent fix to Git repo: `https://github.com/DerbSwag/proxmox-k8s-infra` (commit `35e0bba`)
 
 ---
 

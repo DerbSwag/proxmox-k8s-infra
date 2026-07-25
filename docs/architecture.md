@@ -1,4 +1,4 @@
-# Company Lab Infrastructure — Architecture Guide
+# Proxmox K8s Infrastructure Lab — Architecture Guide
 
 เอกสารอธิบายแต่ละ component ว่าคืออะไร ทำอะไร ทำงานยังไง
 
@@ -152,9 +152,9 @@ ArgoCD sync → deploy version ใหม่
 
 ## 🌐 BIND9 DNS
 
-**คืออะไร:** DNS server สำหรับ resolve ชื่อภายใน (company.local)
+**คืออะไร:** DNS server สำหรับ resolve ชื่อภายใน (lab.local)
 
-**ทำอะไร:** แปลงชื่อ เช่น `k8s-master.company.local` → `10.0.1.10`
+**ทำอะไร:** แปลงชื่อ เช่น `k8s-master.lab.local` → `10.0.1.10`
 
 **ทำงานยังไง:**
 - รันเป็น pod ใน namespace infra
@@ -163,7 +163,7 @@ ArgoCD sync → deploy version ใหม่
 
 **ทดสอบ:**
 ```bash
-nslookup k8s-master.company.local 10.0.1.10 -port=30053
+nslookup k8s-master.lab.local 10.0.1.10 -port=30053
 ```
 
 ---

@@ -28,8 +28,8 @@ spec:
               mountPath: /etc/bind/named.conf.local
               subPath: named.conf.local
             - name: bind9-config
-              mountPath: /etc/bind/zones/db.company.local
-              subPath: db.company.local
+              mountPath: /etc/bind/zones/db.lab.local
+              subPath: db.lab.local
             - name: bind9-config
               mountPath: /etc/bind/zones/db.10.0.1
               subPath: db.10.0.1

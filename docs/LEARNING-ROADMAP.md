@@ -1,4 +1,4 @@
-# Learning Roadmap — เข้าใจ company-lab-infra ให้ลึก
+# Learning Roadmap — เข้าใจ proxmox-k8s-infra ให้ลึก
 
 แผนเรียนที่อิงจาก stack จริงของโปรเจกต์นี้ และ **map กับ incident จริง** ที่เคยเกิด
 (ดู `INCIDENTS.md` / `docs/incidents/`). โปรเจกต์นี้คือ **DevOps / SRE / Infrastructure**

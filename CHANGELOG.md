@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to company-lab-infra. Format based on [Keep a Changelog](https://keepachangelog.com/).
+All notable changes to proxmox-k8s-infra. Format based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [2026-06-17]
 ### Fixed

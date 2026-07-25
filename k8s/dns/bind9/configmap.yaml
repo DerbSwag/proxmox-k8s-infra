@@ -5,23 +5,23 @@ metadata:
   namespace: infra
 data:
   named.conf.local: |
-    zone "company.local" {
+    zone "lab.local" {
         type master;
-        file "/etc/bind/zones/db.company.local";
+        file "/etc/bind/zones/db.lab.local";
     };
-    zone "101.168.192.in-addr.arpa" {
+    zone "1.0.10.in-addr.arpa" {
         type master;
         file "/etc/bind/zones/db.10.0.1";
     };
-  db.company.local: |
+  db.lab.local: |
     $TTL    604800
-    @       IN      SOA     dns-server.company.local. admin.company.local. (
+    @       IN      SOA     dns-server.lab.local. admin.lab.local. (
                                   2024040302         ; Serial
                              604800         ; Refresh
                               86400         ; Retry
                             2419200         ; Expire
                              604800 )       ; Negative Cache TTL
-    @       IN      NS      dns-server.company.local.
+    @       IN      NS      dns-server.lab.local.
     dns-server      IN      A       10.0.1.x
     k8s-master      IN      A       10.0.1.10
     k8s-worker-01   IN      A       10.0.1.11
@@ -34,16 +34,16 @@ data:
     argocd          IN      A       10.0.1.10
   db.10.0.1: |
     $TTL    604800
-    @       IN      SOA     dns-server.company.local. admin.company.local. (
+    @       IN      SOA     dns-server.lab.local. admin.lab.local. (
                                   2024040301         ; Serial
                              604800         ; Refresh
                               86400         ; Retry
                             2419200         ; Expire
                              604800 )       ; Negative Cache TTL
-    @       IN      NS      dns-server.company.local.
-    143     IN      PTR     dns-server.company.local.
-    95      IN      PTR     pve01.company.local.
-    96      IN      PTR     pve02.company.local.
-    140     IN      PTR     k8s-master.company.local.
-    141     IN      PTR     k8s-worker-01.company.local.
-    142     IN      PTR     k8s-worker-02.company.local.
+    @       IN      NS      dns-server.lab.local.
+    143     IN      PTR     dns-server.lab.local.
+    95      IN      PTR     pve01.lab.local.
+    96      IN      PTR     pve02.lab.local.
+    140     IN      PTR     k8s-master.lab.local.
+    141     IN      PTR     k8s-worker-01.lab.local.
+    142     IN      PTR     k8s-worker-02.lab.local.

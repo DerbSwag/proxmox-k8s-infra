@@ -2,7 +2,7 @@
 # Re-add all monitored hosts to a fresh Zabbix via API.
 # Used during DR (2026-06-16) after Zabbix DB was lost.
 # Run from a host that can reach the Zabbix web NodePort.
-#   ZBX_URL=http://10.0.1.10:30080 ZBX_USER=Admin ZBX_PASS=zabbix ./scripts/zabbix-readd-hosts.sh
+#   ZBX_URL=http://10.0.1.10:30080 ZBX_USER=<user> ZBX_PASS=<password> ./scripts/zabbix-readd-hosts.sh
 #
 # Host inventory source of truth: README.md "Monitored Hosts" table.
 # Templates assumed present in a default Zabbix 7.0 install:
@@ -10,8 +10,8 @@
 set -euo pipefail
 
 ZBX_URL="${ZBX_URL:-http://localhost:30080}"
-ZBX_USER="${ZBX_USER:-Admin}"
-ZBX_PASS="${ZBX_PASS:-zabbix}"
+ZBX_USER="${ZBX_USER:?set ZBX_USER}"
+ZBX_PASS="${ZBX_PASS:?set ZBX_PASS}"
 API="$ZBX_URL/api_jsonrpc.php"
 H='Content-Type: application/json'
 call() { curl -s -X POST "$API" -H "$H" -d "$1"; }
