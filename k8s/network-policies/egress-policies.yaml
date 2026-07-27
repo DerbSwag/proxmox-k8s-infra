@@ -48,7 +48,7 @@ spec:
     # API server
     - to:
         - ipBlock:
-            cidr: 10.0.1.10/32
+            cidr: 192.0.2.10/32
       ports:
         - port: 6443
 ---
@@ -99,14 +99,14 @@ spec:
     # Scrape all namespaces (Prometheus needs to reach node-exporter, kubelet, etc.)
     - to:
         - ipBlock:
-            cidr: 10.42.0.0/16
+            cidr: 198.18.0.0/16
     - to:
         - ipBlock:
-            cidr: 10.43.0.0/16
+            cidr: 198.51.100.0/24
     # Node IPs for kubelet/node-exporter scraping
     - to:
         - ipBlock:
-            cidr: 10.0.1.x/24
+            cidr: 192.0.2.0/24
       ports:
         - port: 9100
         - port: 10250
@@ -117,9 +117,9 @@ spec:
         - ipBlock:
             cidr: 0.0.0.0/0
             except:
-              - 10.0.0.0/8
+              - 198.18.0.0/15
               - 172.16.0.0/12
-              - 10.0.0.0/16
+              - 192.0.2.0/24
       ports:
         - port: 443
           protocol: TCP
@@ -171,22 +171,22 @@ spec:
     # Zabbix agent on nodes
     - to:
         - ipBlock:
-            cidr: 10.0.1.x/24
+            cidr: 192.0.2.0/24
       ports:
         - port: 10050
         - port: 161
           protocol: UDP
-    # Zabbix agent on other subnets (Windows servers, CCTV)
+    # Zabbix agent on other subnets (Windows servers, camera)
     - to:
         - ipBlock:
-            cidr: 10.0.3.x/24
+            cidr: 203.0.113.0/24
       ports:
         - port: 10050
         - port: 161
           protocol: UDP
     - to:
         - ipBlock:
-            cidr: 10.0.2.x/24
+            cidr: 198.51.100.0/24
       ports:
         - port: 10050
         - port: 161
@@ -195,9 +195,9 @@ spec:
         - ipBlock:
             cidr: 0.0.0.0/0
             except:
-              - 10.0.0.0/8
+              - 198.18.0.0/15
               - 172.16.0.0/12
-              - 10.0.0.0/16
+              - 192.0.2.0/24
       ports:
         - port: 443
           protocol: TCP

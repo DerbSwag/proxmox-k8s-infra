@@ -1,7 +1,7 @@
 #!/bin/bash
 # Backup Verification Script
 # Verifies Proxmox VM backups exist and are recent
-# Run monthly: ssh root@10.0.1.1 'bash -s' < scripts/verify-backups.sh
+# Run monthly: ssh admin@192.0.2.1 'bash -s' < scripts/verify-backups.sh
 
 BACKUP_DIR="/var/lib/vz/dump"
 MAX_AGE_DAYS=8  # Backups run weekly (Sunday), allow 8 days

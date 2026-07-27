@@ -2,7 +2,7 @@
 export PATH=/usr/local/bin:/usr/bin:/bin
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 echo "=== DNS working? ==="
-kubectl run dnst --image=busybox:1.36 --restart=Never -n default --command -- sh -c "nslookup google.com 10.43.0.10" >/dev/null 2>&1 || true
+kubectl run dnst --image=busybox:1.36 --restart=Never -n default --command -- sh -c "nslookup google.com <KUBERNETES_SERVICE_IP>0" >/dev/null 2>&1 || true
 sleep 6
 kubectl logs dnst -n default 2>&1 | grep -iE "Address" | tail -2
 kubectl delete pod dnst -n default --force >/dev/null 2>&1 || true

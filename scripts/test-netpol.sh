@@ -1,7 +1,7 @@
 #!/bin/bash
 # NetworkPolicy Connectivity Test
 # Run BEFORE and AFTER applying NetworkPolicy changes
-# Usage: ssh devops@10.0.1.10 'bash -s' < scripts/test-netpol.sh
+# Usage: ssh labuser@192.0.2.10 'bash -s' < scripts/test-netpol.sh
 
 set -e
 

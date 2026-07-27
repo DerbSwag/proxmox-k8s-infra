@@ -8,7 +8,7 @@
 
 ## Summary
 
-`apt-get update` บน Proxmox nodes (pve01, pve02) fail ด้วย **401 Unauthorized** จาก enterprise repository — เพราะไม่มี Proxmox subscription แต่ repo ยังชี้ไปที่ `enterprise.proxmox.com`
+`apt-get update` บน Proxmox nodes (hypervisor-01, hypervisor-02) fail ด้วย **401 Unauthorized** จาก enterprise repository — เพราะไม่มี Proxmox subscription แต่ repo ยังชี้ไปที่ `enterprise.proxmox.com`
 
 ## Root Cause
 
@@ -28,7 +28,7 @@ mv /etc/apt/sources.list.d/pve-enterprise.sources /etc/apt/sources.list.d/pve-en
 apt-get update
 ```
 
-ทำบนทั้ง pve01 (10.0.1.1) และ pve02 (10.0.1.2)
+ทำบนทั้ง hypervisor-01 (192.0.2.1) และ hypervisor-02 (192.0.2.2)
 
 ## Lessons Learned
 

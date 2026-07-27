@@ -12,12 +12,12 @@ All three node VMs were cloned from the same master template and **never had the
 netplan IP corrected**. Every node has:
 
 ```
-/etc/netplan/00-installer-config.yaml   -> static address 10.0.1.10/24  (MASTER's IP!)
+/etc/netplan/00-installer-config.yaml   -> static address 192.0.2.10/24  (MASTER's IP!)
 /etc/netplan/50-cloud-init.yaml         -> dhcp4: true
 ```
 
 So on EVERY node the interface ends up with:
-- `10.0.1.10/24` (static — duplicated across all 3 nodes!)
+- `192.0.2.10/24` (static — duplicated across all 3 nodes!)
 - a rotating DHCP lease (.94 / .166 / .167 — changes over time)
 - default route egressing via the DHCP src address
 
@@ -40,11 +40,11 @@ UFW rules, iptables flushes, k3s restarts, cold reboots, even a full clean reins
 none touched netplan, so the duplicate-IP/asymmetric-routing condition persisted.
 
 ## Evidence
-- `ip -4 addr show ens18` on each worker: shows `10.0.1.10/24` + a dynamic DHCP IP.
+- `ip -4 addr show ens18` on each worker: shows `192.0.2.10/24` + a dynamic DHCP IP.
 - netplan files identical on all 3 nodes (static .140 + dhcp4:true).
 - k3s `INTERNAL-IP`: .140/.141/.142 (correct, from --node-ip / original lease).
 - ARP on master: .141→worker1 MAC, .142→worker2 MAC.
-- Prometheus `up`: only 10.0.1.10 targets =1; .141 and .142 node-exporter+kubelet =0.
+- Prometheus `up`: only 192.0.2.10 targets =1; .141 and .142 node-exporter+kubelet =0.
 
 ## SAFE FIX (maintenance window, with Proxmox console open)
 
@@ -61,12 +61,12 @@ network:
     ens18:
       dhcp4: false
       addresses:
-        - 10.0.1.11/24      # <-- unique per node
+        - 192.0.2.11/24      # <-- unique per node
       routes:
         - to: default
-          via: 10.0.1.x
+          via: 192.0.2.x
       nameservers:
-        addresses: [10.0.1.x, 8.8.8.8]
+        addresses: [192.0.2.x, 8.8.8.8]
 ```
 
 Steps per node (via Proxmox console, NOT ssh, to survive IP change):
@@ -116,8 +116,8 @@ auto-revert safety net (background job that restores config in 90s unless cancel
 blocked because the **UFW rules for 9100/10250 were missing** (they existed before the
 2026-06-16 DR rebuild but were lost when the agent was reinstalled). Re-added:
 ```bash
-ufw allow from 10.0.1.x/24 to any port 9100 proto tcp     # node-exporter
-ufw allow from 10.0.1.x/24 to any port 10250 proto tcp    # kubelet
+ufw allow from 192.0.2.x/24 to any port 9100 proto tcp     # node-exporter
+ufw allow from 192.0.2.x/24 to any port 10250 proto tcp    # kubelet
 ```
 So the real root cause was **two things stacked**: dual-IP asymmetric routing **AND**
 missing UFW host-port rules. Both had to be fixed.

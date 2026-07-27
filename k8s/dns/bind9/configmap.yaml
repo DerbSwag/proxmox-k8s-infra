@@ -9,9 +9,9 @@ data:
         type master;
         file "/etc/bind/zones/db.lab.local";
     };
-    zone "1.0.10.in-addr.arpa" {
+    zone "2.0.192.in-addr.arpa" {
         type master;
-        file "/etc/bind/zones/db.10.0.1";
+        file "/etc/bind/zones/db.192.0.2";
     };
   db.lab.local: |
     $TTL    604800
@@ -22,17 +22,17 @@ data:
                             2419200         ; Expire
                              604800 )       ; Negative Cache TTL
     @       IN      NS      dns-server.lab.local.
-    dns-server      IN      A       10.0.1.x
-    k8s-master      IN      A       10.0.1.10
-    k8s-worker-01   IN      A       10.0.1.11
-    k8s-worker-02   IN      A       10.0.1.12
-    pve01           IN      A       10.0.1.1
-    pve02           IN      A       10.0.1.2
-    grafana         IN      A       10.0.1.10
-    prometheus      IN      A       10.0.1.10
-    zabbix          IN      A       10.0.1.10
-    argocd          IN      A       10.0.1.10
-  db.10.0.1: |
+    dns-server      IN      A       192.0.2.x
+    k8s-master      IN      A       192.0.2.10
+    k8s-worker-01   IN      A       192.0.2.11
+    k8s-worker-02   IN      A       192.0.2.12
+    hypervisor-01           IN      A       192.0.2.1
+    hypervisor-02           IN      A       192.0.2.2
+    grafana         IN      A       192.0.2.10
+    prometheus      IN      A       192.0.2.10
+    zabbix          IN      A       192.0.2.10
+    argocd          IN      A       192.0.2.10
+  db.192.0.2: |
     $TTL    604800
     @       IN      SOA     dns-server.lab.local. admin.lab.local. (
                                   2024040301         ; Serial
@@ -42,8 +42,8 @@ data:
                              604800 )       ; Negative Cache TTL
     @       IN      NS      dns-server.lab.local.
     143     IN      PTR     dns-server.lab.local.
-    95      IN      PTR     pve01.lab.local.
-    96      IN      PTR     pve02.lab.local.
+    95      IN      PTR     hypervisor-01.lab.local.
+    96      IN      PTR     hypervisor-02.lab.local.
     140     IN      PTR     k8s-master.lab.local.
     141     IN      PTR     k8s-worker-01.lab.local.
     142     IN      PTR     k8s-worker-02.lab.local.

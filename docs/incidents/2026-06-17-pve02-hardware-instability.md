@@ -1,25 +1,25 @@
-# Incident: pve02 host hardware instability (flapping)
+# Incident: hypervisor-02 host hardware instability (flapping)
 
 **Date:** 2026-06-17 → 2026-06-19 (ongoing — watch)
-**Severity:** High (host-level; affects worker-02 + pve02 monitoring)
-**Status:** OPEN — pve02 back up but unstable; physical hardware check needed
+**Severity:** High (host-level; affects worker-02 + hypervisor-02 monitoring)
+**Status:** OPEN — hypervisor-02 back up but unstable; physical hardware check needed
 
 ## Symptoms
-pve02 (10.0.1.2) has gone down/up multiple times over 2+ days:
+hypervisor-02 (192.0.2.2) has gone down/up multiple times over 2+ days:
 - 2026-06-17: host hang (ping/SSH/web 8006 all dead)
 - 2026-06-18~19: flapping — ping OK but SSH(22)/web(8006)/zabbix(10050) dead, then full
   down (100% ping loss), then back
 - 2026-06-19 ~16:30: recovered (uptime 1 min = power-cycled at the machine)
 
-Each downtime takes with it: k8s-worker-02 (VM 210) → NotReady, pve02+worker-02 Zabbix
+Each downtime takes with it: k8s-worker-02 (VM 210) → NotReady, hypervisor-02+worker-02 Zabbix
 agents → down, Proxmox cluster loses quorum (Nodes 1/2).
 
 ## Impact
 - k8s tolerated it — workloads ran on master+worker-01; Vault/Zabbix/Prometheus/Grafana/
   CoreDNS stayed up. Brief churn/alert burst on each transition (now readable thanks to
   the summary + inhibit alerts: SingleNodeDown/KubeNodeNotReady fire once then resolve).
-- Proxmox cluster non-quorate while pve02 down → VM management blocked on pve01 until
-  quorum returns. Workaround: `pvecm expected 1` on pve01.
+- Proxmox cluster non-quorate while hypervisor-02 down → VM management blocked on hypervisor-01 until
+  quorum returns. Workaround: `pvecm expected 1` on hypervisor-01.
 
 ## Likely cause
 Pattern (ping-but-services-dead → full down → recurring across full power cycles) points
@@ -35,16 +35,16 @@ to **hardware**, not software: RAM errors, failing disk, PSU, or overheating.
    `journalctl -k -b -1 | grep -iE "mce|hardware error|thermal|ECC|ATA|I/O error"`
 
 ## Interim mitigation
-- If pve02 stays flaky: cordon worker-02 when it's down; keep critical/stateful pods off it.
-- If pve02 must stay down: `pvecm expected 1` on pve01 to keep VM management working.
-- VMs have `onboot=1` → worker-02 auto-starts when pve02 recovers.
-- ⚠️ worker-02 VM (210) backups live on pve02 local disk — if the disk is the failing
-  part, copy VM 210 backup to pve01 / external storage ASAP.
+- If hypervisor-02 stays flaky: cordon worker-02 when it's down; keep critical/stateful pods off it.
+- If hypervisor-02 must stay down: `pvecm expected 1` on hypervisor-01 to keep VM management working.
+- VMs have `onboot=1` → worker-02 auto-starts when hypervisor-02 recovers.
+- ⚠️ worker-02 VM (210) backups live on hypervisor-02 local disk — if the disk is the failing
+  part, copy VM 210 backup to hypervisor-01 / external storage ASAP.
 
 ## Notes
 - Separate from the netplan host-port issue (resolved 2026-06-17).
 
-## Diagnostics gathered 2026-06-19 (while pve02 online)
+## Diagnostics gathered 2026-06-19 (while hypervisor-02 online)
 Collected via SSH before any physical work:
 
 | Check | Result | Verdict |
@@ -71,4 +71,4 @@ Collected via SSH before any physical work:
 4. **Reseat RAM + power/SATA cables**; clear dust.
 
 (After replacing CMOS battery, set correct time in BIOS and verify `timedatectl` /
-that NTP is syncing on pve02.)
+that NTP is syncing on hypervisor-02.)

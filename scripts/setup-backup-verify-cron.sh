@@ -1,6 +1,6 @@
 #!/bin/bash
 # Setup monthly backup verification cron on Proxmox host
-# Usage: ssh root@10.0.1.1 'bash -s' < scripts/setup-backup-verify-cron.sh
+# Usage: ssh admin@192.0.2.1 'bash -s' < scripts/setup-backup-verify-cron.sh
 
 SCRIPT_PATH="/usr/local/bin/verify-backups.sh"
 CRON_ENTRY="0 4 1 * * /usr/local/bin/verify-backups.sh >> /var/log/backup-verify.log 2>&1"

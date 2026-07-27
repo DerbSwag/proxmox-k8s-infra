@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# k3s datastore (SQLite) + local-path PV backup to a SEPARATE host (pve01).
+# k3s datastore (SQLite) + local-path PV backup to a SEPARATE host (hypervisor-01).
 # Run as the 'devops' user (NOT via sudo) so SSH keys resolve correctly.
 # Local root-only reads use `sudo -n` (master has NOPASSWD; workers have a scoped rule).
 #
@@ -14,11 +14,11 @@ set -euo pipefail
 TS=$(date +%Y%m%d-%H%M%S)
 DBSRC=/var/lib/rancher/k3s/server/db/state.db
 STAGE=/home/devops/k3s-backups
-DEST_HOST=root@10.0.1.1          # pve01 (separate disk from the k8s VMs)
+DEST_HOST=admin@192.0.2.1          # hypervisor-01 (separate disk from the k8s VMs)
 DEST_DIR=/var/lib/vz/k3s-backups
-WORKERS="10.0.1.11 10.0.1.12"
+WORKERS="192.0.2.11 192.0.2.12"
 RETENTION_DAYS=7
-SSHKEY=/home/devops/.ssh/id_ed25519    # devops key (has access to pve01 + workers)
+SSHKEY=/home/devops/.ssh/id_ed25519    # devops key (has access to hypervisor-01 + workers)
 SSH="ssh -i $SSHKEY -o ConnectTimeout=8 -o StrictHostKeyChecking=no"
 SCP="scp -i $SSHKEY -o ConnectTimeout=8 -o StrictHostKeyChecking=no"
 
@@ -33,7 +33,7 @@ mv "/tmp/state-$TS.db.gz" "$STAGE/"
 # 2. TAR local-path PV data from each worker (scoped NOPASSWD sudo for tar)
 # tar may exit non-zero on harmless "file changed as we read it"; don't abort.
 for node in $WORKERS; do
-  $SSH devops@"$node" "sudo -n tar czf - -C /var/lib/rancher/k3s/storage ." \
+  $SSH labuser@"$node" "sudo -n tar czf - -C /var/lib/rancher/k3s/storage ." \
     > "$STAGE/pv-$node-$TS.tar.gz" 2>/dev/null || true
   # drop empty/failed archives (node with no PVCs)
   [ -s "$STAGE/pv-$node-$TS.tar.gz" ] || rm -f "$STAGE/pv-$node-$TS.tar.gz"

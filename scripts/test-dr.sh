@@ -1,7 +1,7 @@
 #!/bin/bash
 # Disaster Recovery Validation Test
 # Tests that critical components can be verified after recovery
-# Usage: ssh devops@10.0.1.10 'bash -s' < scripts/test-dr.sh
+# Usage: ssh labuser@192.0.2.10 'bash -s' < scripts/test-dr.sh
 
 set -e
 

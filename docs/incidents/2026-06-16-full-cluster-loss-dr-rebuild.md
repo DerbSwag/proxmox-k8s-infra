@@ -42,10 +42,10 @@ Followed `docs/disaster-recovery.md` Scenario 3:
 - **Zabbix history/metrics** (graphs, trends prior to 2026-06-16) — GONE (DB + the
   24-May VM backup were both lost; the backup was deleted during the disk-full cleanup).
 - **Zabbix config was fully REBUILT** (2026-06-16): all 14 hosts re-added via
-  `scripts/zabbix-readd-hosts.sh` (Linux/Windows/Proxmox/CCTV), GoogleUpdater
+  `scripts/zabbix-readd-hosts.sh` (Linux/Windows/Proxmox/camera), GoogleUpdater
   suppression macro re-applied, per-OS Lark routing recreated (media types 70/71/72 +
-  3 actions, Windows -> dedicated group), pve01/pve02 linked to Linux template (194
-  items each, available), CCTV-01/02/03 linked to Generic-by-SNMP (community `public`,
+  3 actions, Windows -> dedicated group), hypervisor-01/hypervisor-02 linked to Linux template (194
+  items each, available), CAMERA-01/02/03 linked to Generic-by-SNMP (community placeholder,
   verified). **All 14 hosts UP.**
 - **Vault**: previous secrets re-created via bootstrap (fastapi/db placeholder pw).
 - **Vault**: previous secrets — re-created via bootstrap (only fastapi/db, placeholder pw).
@@ -69,7 +69,7 @@ Followed `docs/disaster-recovery.md` Scenario 3:
 1. **Fix Proxmox backups** — ✅ DONE 2026-06-16. Root cause: backup retention
    `keep-last=1,keep-weekly=4` accumulated more backups (10-15GB each × 4 VMs) than
    the 65GB pve root disk could hold → disk hit 100% → silent "Broken pipe" failures
-   since ~05-24. Fix: pruned old backups (pve01 100%→63%, pve02 90%→36%), changed
+   since ~05-24. Fix: pruned old backups (hypervisor-01 100%→63%, hypervisor-02 90%→36%), changed
    retention to `keep-last=1` in `/etc/pve/jobs.cfg` (shared cluster config), and
    verified fresh backups of 200 + 201 now succeed. **Longer term: backups should go
    to external storage (NFS/PBS), not the small local pve disk.** Also add an alert
@@ -84,7 +84,7 @@ Followed `docs/disaster-recovery.md` Scenario 3:
 5. **Document Zabbix host inventory in git** — ✅ DONE. `scripts/zabbix-readd-hosts.sh`
    reprovisions all 13 hosts via API; inventory also in README "Monitored Hosts".
 6. **worker-01 root cause** — ✅ CONFIRMED 2026-06-16 (not k3s). Duplicate static IP
-   10.0.1.10 in netplan on all nodes + DHCP override → asymmetric routing drops
+   192.0.2.10 in netplan on all nodes + DHCP override → asymmetric routing drops
    cross-node host-port traffic (9100/10250). Fix runbook:
    `docs/incidents/2026-06-16-worker-duplicate-ip-rootcause.md` (needs Proxmox console).
 

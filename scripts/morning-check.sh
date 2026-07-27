@@ -1,6 +1,6 @@
 #!/bin/bash
 # Morning Health Check - Proxmox K8s Lab
-# Usage: ssh devops@10.0.1.10 'bash -s' < morning-check.sh
+# Usage: ssh labuser@192.0.2.10 'bash -s' < morning-check.sh
 
 echo "=========================================="
 echo "  🌅 Morning Health Check - $(date '+%Y-%m-%d %H:%M')"
@@ -114,7 +114,7 @@ fi
 echo ""
 
 echo "=========================================="
-echo "  🔗 Grafana:  http://10.0.1.10:31000/d/cluster-overview"
-echo "  🔗 Zabbix:   http://10.0.1.10:30080"
-echo "  🔗 Proxmox:  https://10.0.1.1:8006"
+echo "  🔗 Grafana:  http://192.0.2.10:31000/d/cluster-overview"
+echo "  🔗 Zabbix:   http://192.0.2.10:30080"
+echo "  🔗 Proxmox:  https://192.0.2.1:8006"
 echo "=========================================="

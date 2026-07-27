@@ -18,17 +18,17 @@
 **Recovery:**
 ```bash
 # 1. Check if VM is running on Proxmox
-ssh root@10.0.1.1 "qm status 101"  # worker-01
-ssh root@10.0.1.1 "qm status 102"  # worker-02
+ssh admin@192.0.2.1 "qm status 101"  # worker-01
+ssh admin@192.0.2.1 "qm status 102"  # worker-02
 
 # 2. Start VM if stopped
-ssh root@10.0.1.1 "qm start 101"
+ssh admin@192.0.2.1 "qm start 101"
 
 # 3. If VM corrupted — restore from backup
-ssh root@10.0.1.1 "qmrestore /var/lib/vz/dump/vzdump-qemu-101-*.vma.zst 101 --force"
+ssh admin@192.0.2.1 "qmrestore /var/lib/vz/dump/vzdump-qemu-101-*.vma.zst 101 --force"
 
 # 4. Rejoin cluster (if k3s agent broken)
-ssh devops@10.0.1.11 "sudo systemctl restart k3s-agent"
+ssh labuser@192.0.2.11 "sudo systemctl restart k3s-agent"
 ```
 
 ---
@@ -40,13 +40,13 @@ ssh devops@10.0.1.11 "sudo systemctl restart k3s-agent"
 **Recovery:**
 ```bash
 # 1. Try restart VM
-ssh root@10.0.1.1 "qm start 100"
+ssh admin@192.0.2.1 "qm start 100"
 
 # 2. If VM corrupted — restore from backup
-ssh root@10.0.1.1 "qmrestore /var/lib/vz/dump/vzdump-qemu-100-*.vma.zst 100 --force"
+ssh admin@192.0.2.1 "qmrestore /var/lib/vz/dump/vzdump-qemu-100-*.vma.zst 100 --force"
 
 # 3. Verify k3s master
-ssh devops@10.0.1.10 "sudo systemctl status k3s && kubectl get nodes"
+ssh labuser@192.0.2.10 "sudo systemctl status k3s && kubectl get nodes"
 
 # 4. If full rebuild needed
 cd terraform/ && terraform apply -auto-approve -target=proxmox_vm_qemu.k8s_master
@@ -119,18 +119,18 @@ bash scripts/test-netpol.sh
 
 ## Scenario 4: Proxmox Host Failure
 
-**If pve01 (primary) down:**
-- VMs on pve01: k8s-master (100), k8s-worker-01 (101)
-- VMs on pve02: k8s-worker-02 (102)
+**If hypervisor-01 (primary) down:**
+- VMs on hypervisor-01: k8s-master (100), k8s-worker-01 (101)
+- VMs on hypervisor-02: k8s-worker-02 (102)
 
 ```bash
 # Check if Corosync sees the other node
-ssh root@10.0.1.2 "pvecm status"
+ssh admin@192.0.2.2 "pvecm status"
 
-# Restore VMs from backup on pve02 (if has enough resources)
-ssh root@10.0.1.2 "qmrestore /path/to/backup/vzdump-qemu-100-*.vma.zst 100"
-ssh root@10.0.1.2 "qmrestore /path/to/backup/vzdump-qemu-101-*.vma.zst 101"
-ssh root@10.0.1.2 "qm start 100 && qm start 101"
+# Restore VMs from backup on hypervisor-02 (if has enough resources)
+ssh admin@192.0.2.2 "qmrestore /path/to/backup/vzdump-qemu-100-*.vma.zst 100"
+ssh admin@192.0.2.2 "qmrestore /path/to/backup/vzdump-qemu-101-*.vma.zst 101"
+ssh admin@192.0.2.2 "qm start 100 && qm start 101"
 ```
 
 ---
@@ -147,7 +147,7 @@ ssh root@10.0.1.2 "qm start 100 && qm start 101"
 > `db/snapshots` path above never existed. A real datastore backup is now in place:
 > `scripts/k3s-backup.sh` (cron 03:00 on master, as `devops`) does a consistent
 > `sqlite3 .backup` of `state.db` + tars the local-path PV data from the workers and
-> ships everything to **pve01:/var/lib/vz/k3s-backups** (a separate disk), 7-day
+> ships everything to **hypervisor-01:/var/lib/vz/k3s-backups** (a separate disk), 7-day
 > retention. This closes the gap that caused total data loss on 2026-06-16
 > (local-path PVs are wiped by `k3s-uninstall.sh` and were not backed up anywhere).
 

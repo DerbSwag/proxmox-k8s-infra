@@ -1,9 +1,9 @@
 #!/bin/bash
-echo "--- SRV-APP01 (10.0.3.23) ---"
-ping -c 2 -W 2 10.0.3.23 2>&1 | tail -3
+echo "--- APP-SERVER-02 (203.0.113.23) ---"
+ping -c 2 -W 2 203.0.113.23 2>&1 | tail -3
 
-echo "--- SRV-ERP (10.0.2.9) ---"
-ping -c 2 -W 2 10.0.2.9 2>&1 | tail -3
+echo "--- APP-SERVER-03 (198.51.100.9) ---"
+ping -c 2 -W 2 198.51.100.9 2>&1 | tail -3
 
 echo "--- k8s-worker-01 disk ---"
 kubectl get --raw '/api/v1/nodes/k8s-worker-01/proxy/stats/summary' | \

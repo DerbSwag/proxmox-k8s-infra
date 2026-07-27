@@ -11,7 +11,7 @@ zone "lab.local" {
     file "/etc/bind/zones/db.lab.local";
 };
 
-zone "1.0.10.in-addr.arpa" {
+zone "2.0.192.in-addr.arpa" {
     type master;
-    file "/etc/bind/zones/db.10.0.1";
+    file "/etc/bind/zones/db.192.0.2";
 };	

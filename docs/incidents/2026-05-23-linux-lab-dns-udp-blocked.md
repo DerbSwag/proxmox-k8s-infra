@@ -6,7 +6,7 @@
 
 ## Summary
 
-VM `linux-lab` (10.0.1.20) ไม่สามารถ resolve DNS ผ่าน UDP port 53 ได้อย่าง stable ทำให้ Docker pull image timeout
+VM `linux-lab` (192.0.2.20) ไม่สามารถ resolve DNS ผ่าน UDP port 53 ได้อย่าง stable ทำให้ Docker pull image timeout
 
 ## Symptoms
 
@@ -18,10 +18,10 @@ VM `linux-lab` (10.0.1.20) ไม่สามารถ resolve DNS ผ่าน 
 
 ## Root Cause
 
-Gateway/FortiGate firewall อาจ:
+Gateway/firewall appliance firewall อาจ:
 1. Block ICMP/UDP ไป 8.8.8.8 จาก IP ใหม่ที่ไม่อยู่ใน allow list
 2. Rate limit UDP 53 outbound
-3. Policy ยังไม่ครอบคลุม 10.0.1.20
+3. Policy ยังไม่ครอบคลุม 192.0.2.20
 
 ## Mitigation
 
@@ -37,5 +37,5 @@ sudo systemctl restart docker
 
 ## TODO
 
-- [ ] เพิ่ม 10.0.1.20 ใน FortiGate allow policy สำหรับ DNS + HTTPS outbound
+- [ ] เพิ่ม 192.0.2.20 ใน firewall appliance allow policy สำหรับ DNS + HTTPS outbound
 - [ ] ตั้ง local DNS server (BIND9 on k8s) เป็น forwarder แทน

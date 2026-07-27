@@ -11,13 +11,13 @@
 
 ## ภาพรวม Stack ของโปรเจกต์
 ```
-Proxmox VE (pve01/pve02)         ← virtualization (รัน VM ทั้งหมด)
+Proxmox VE (hypervisor-01/hypervisor-02)         ← virtualization (รัน VM ทั้งหมด)
   └─ VMs: k8s-master, worker-01, worker-02, dns, linux-lab
        └─ k3s (Kubernetes)       ← orchestration
             ├─ Helm + ArgoCD     ← deploy / GitOps
             ├─ Prometheus/Grafana/Alertmanager/Loki  ← monitoring
             ├─ Vault             ← secrets
-            ├─ Zabbix            ← monitor Windows/CCTV/network
+            ├─ Zabbix            ← monitor Windows/camera/network
             └─ NetworkPolicy / Traefik / CoreDNS / bind9
 Terraform + Ansible              ← provision + config (IaC)
 Git/GitHub                       ← source of truth (กู้ระบบจากตรงนี้)
@@ -103,7 +103,7 @@ k3s docs, เล่นจริงบน lab ตัวเอง
 - `k8s/monitoring/custom-alerts.yaml` — เขียน alert rules เอง (CoreDNS, capacity, cluster-down)
 - `2026-06-16 alert improvement` — inhibit/grouping ลด noise
 - `Zabbix GoogleUpdater/AppXSvc suppress` — macro `{$SERVICE.NAME.NOT_MATCHES}`
-- `Lark routing` — แยก Windows/CCTV group ด้วย media type
+- `Lark routing` — แยก Windows/camera group ด้วย media type
 
 ---
 
@@ -129,7 +129,7 @@ k3s docs, เล่นจริงบน lab ตัวเอง
 **Map กับ incident จริง:**
 - `2026-06-16 proxmox reboot no autostart` — onboot=1, startup order
 - `2026-06-16 backup disk full` — vzdump, retention, prune
-- `2026-06-17 pve02 hardware instability` — quorum, `pvecm expected 1`, hardware diag
+- `2026-06-17 hypervisor-02 hardware instability` — quorum, `pvecm expected 1`, hardware diag
 
 ---
 

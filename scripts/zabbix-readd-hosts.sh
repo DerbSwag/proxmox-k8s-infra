@@ -2,7 +2,7 @@
 # Re-add all monitored hosts to a fresh Zabbix via API.
 # Used during DR (2026-06-16) after Zabbix DB was lost.
 # Run from a host that can reach the Zabbix web NodePort.
-#   ZBX_URL=http://10.0.1.10:30080 ZBX_USER=<user> ZBX_PASS=<password> ./scripts/zabbix-readd-hosts.sh
+#   ZBX_URL=http://192.0.2.10:30080 ZBX_USER=<user> ZBX_PASS=<password> ./scripts/zabbix-readd-hosts.sh
 #
 # Host inventory source of truth: README.md "Monitored Hosts" table.
 # Templates assumed present in a default Zabbix 7.0 install:
@@ -26,30 +26,30 @@ group_id() {
   echo "$gid"
 }
 GID_LINUX=$(group_id "Linux servers"); GID_WIN=$(group_id "Windows PCs")
-GID_HV=$(group_id "Hypervisors");      GID_CCTV=$(group_id "CCTV")
+GID_HV=$(group_id "Hypervisors");      GID_camera=$(group_id "camera")
 
 add_agent() { # name ip groupid templateid
   local tpl=""; [ -n "$4" ] && tpl=",\"templates\":[{\"templateid\":\"$4\"}]"
   call "{\"jsonrpc\":\"2.0\",\"method\":\"host.create\",\"params\":{\"host\":\"$1\",\"interfaces\":[{\"type\":1,\"main\":1,\"useip\":1,\"ip\":\"$2\",\"dns\":\"\",\"port\":\"10050\"}],\"groups\":[{\"groupid\":\"$3\"}]$tpl},\"auth\":\"$TOKEN\",\"id\":5}" >/dev/null && echo "added $1 ($2)"
 }
 add_snmp() { # name ip
-  call "{\"jsonrpc\":\"2.0\",\"method\":\"host.create\",\"params\":{\"host\":\"$1\",\"interfaces\":[{\"type\":2,\"main\":1,\"useip\":1,\"ip\":\"$2\",\"dns\":\"\",\"port\":\"161\",\"details\":{\"version\":2,\"community\":\"{\$SNMP_COMMUNITY}\"}}],\"groups\":[{\"groupid\":\"$GID_CCTV\"}],\"macros\":[{\"macro\":\"{\$SNMP_COMMUNITY}\",\"value\":\"public\"}]},\"auth\":\"$TOKEN\",\"id\":6}" >/dev/null && echo "added $1 ($2)"
+  call "{\"jsonrpc\":\"2.0\",\"method\":\"host.create\",\"params\":{\"host\":\"$1\",\"interfaces\":[{\"type\":2,\"main\":1,\"useip\":1,\"ip\":\"$2\",\"dns\":\"\",\"port\":\"161\",\"details\":{\"version\":2,\"community\":\"{\$SNMP_COMMUNITY}\"}}],\"groups\":[{\"groupid\":\"$GID_camera\"}],\"macros\":[{\"macro\":\"{\$SNMP_COMMUNITY}\",\"value\":\"public\"}]},\"auth\":\"$TOKEN\",\"id\":6}" >/dev/null && echo "added $1 ($2)"
 }
 
-add_agent "k8s-master"    "10.0.1.10" "$GID_LINUX" "10001"
-add_agent "k8s-worker-01" "10.0.1.11" "$GID_LINUX" "10001"
-add_agent "k8s-worker-02" "10.0.1.12" "$GID_LINUX" "10001"
-add_agent "SRV-FILE"   "10.0.3.10"    "$GID_WIN"   "10081"
-add_agent "SRV-APP01"  "10.0.3.23"    "$GID_WIN"   "10081"
-add_agent "SRV-ERP"      "10.0.2.9"   "$GID_WIN"   "10081"
-add_agent "SRV-PLAN"    "10.0.2.11"  "$GID_WIN"   "10081"
-add_agent "SRV-HR"   "10.0.2.13"  "$GID_WIN"   "10081"
-add_agent "pve01"         "10.0.1.1"  "$GID_HV"    ""
-add_agent "pve02"         "10.0.1.2"  "$GID_HV"    ""
-add_snmp  "CCTV-01"       "10.0.3.9"
-add_snmp  "CCTV-02"       "10.0.1.x"
-add_snmp  "CCTV-03"       "10.0.2.139"
-add_snmp  "CCTV-04"       "10.0.1.x"
+add_agent "k8s-master"    "192.0.2.10" "$GID_LINUX" "10001"
+add_agent "k8s-worker-01" "192.0.2.11" "$GID_LINUX" "10001"
+add_agent "k8s-worker-02" "192.0.2.12" "$GID_LINUX" "10001"
+add_agent "APP-SERVER-01"   "203.0.113.10"    "$GID_WIN"   "10081"
+add_agent "APP-SERVER-02"  "203.0.113.23"    "$GID_WIN"   "10081"
+add_agent "APP-SERVER-03"      "198.51.100.9"   "$GID_WIN"   "10081"
+add_agent "APP-SERVER-04"    "198.51.100.11"  "$GID_WIN"   "10081"
+add_agent "APP-SERVER-05"   "198.51.100.13"  "$GID_WIN"   "10081"
+add_agent "hypervisor-01"         "192.0.2.1"  "$GID_HV"    ""
+add_agent "hypervisor-02"         "192.0.2.2"  "$GID_HV"    ""
+add_snmp  "CAMERA-01"       "203.0.113.9"
+add_snmp  "CAMERA-02"       "192.0.2.x"
+add_snmp  "CAMERA-03"       "198.51.100.139"
+add_snmp  "CAMERA-04"       "192.0.2.x"
 
 echo "Done. NOTE: after this, re-apply the GoogleUpdater suppression macro on the"
 echo "'Windows by Zabbix agent' template (\$SERVICE.NAME.NOT_MATCHES) — see docs/zabbix-notes.md."

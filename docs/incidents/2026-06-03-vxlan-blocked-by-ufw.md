@@ -3,11 +3,11 @@
 **Date:** 2026-06-03
 **Duration:** ~30 min (detection to resolution)
 **Severity:** High
-**Impact:** Zabbix web UI (`10.0.1.10:30080/zabbix.php`) completely unreachable
+**Impact:** Zabbix web UI (`192.0.2.10:30080/zabbix.php`) completely unreachable
 
 ## Symptoms
 
-- `http://10.0.1.10:30080/zabbix.php` returned connection refused
+- `http://192.0.2.10:30080/zabbix.php` returned connection refused
 - TCP test to port 30080 failed from workstation
 - Pods running, Service/NodePort configured correctly
 
@@ -15,7 +15,7 @@
 
 UFW `INPUT` policy set to `DROP` on all cluster nodes. VXLAN overlay traffic (UDP 8472) between nodes was silently blocked, breaking cross-node pod networking.
 
-Additional finding: `cni0` bridge on worker-01 had stale IP (`10.42.0.1/24` instead of `10.42.1.1/24`) — fixed by k3s-agent restart.
+Additional finding: `cni0` bridge on worker-01 had a stale pod-network bridge address. It was fixed by restarting `k3s-agent`.
 
 Workers also couldn't rejoin cluster because TCP 6443 (API server) was blocked by the same firewall policy.
 
@@ -35,10 +35,10 @@ Added UFW rules on all nodes:
 
 ```bash
 # All nodes - VXLAN overlay
-sudo ufw allow from 10.0.1.x/24 to any port 8472 proto udp
+sudo ufw allow from 192.0.2.x/24 to any port 8472 proto udp
 
 # Master only - API server
-sudo ufw allow from 10.0.1.x/24 to any port 6443 proto tcp
+sudo ufw allow from 192.0.2.x/24 to any port 6443 proto tcp
 ```
 
 Also restarted `k3s-agent` on worker-01 to fix stale cni0 bridge IP.

@@ -8,13 +8,13 @@
 ## Symptoms
 
 - Sustained `TargetDown 33%` alerts firing repeatedly (actually the whole cluster, but Prometheus could only report partial before it too went down)
-- master (10.0.1.10) unreachable: no ping, no SSH
+- master (192.0.2.10) unreachable: no ping, no SSH
 
 ## Root Cause
 
-Both Proxmox hosts (pve01 + pve02) rebooted ~1d4h before detection (uptime confirmed both ~1 day 4h) — likely a power event affecting both. **None of the cluster VMs had `onboot` enabled**, so after the hosts came back, every VM stayed `stopped`:
-- pve01: 200 k8s-master, 201 k8s-worker-01, 103 dns-server, 101 linux-lab — all stopped
-- pve02: 210 k8s-worker-02 — stopped
+Both Proxmox hosts (hypervisor-01 + hypervisor-02) rebooted ~1d4h before detection (uptime confirmed both ~1 day 4h) — likely a power event affecting both. **None of the cluster VMs had `onboot` enabled**, so after the hosts came back, every VM stayed `stopped`:
+- hypervisor-01: 200 k8s-master, 201 k8s-worker-01, 103 dns-server, 101 linux-lab — all stopped
+- hypervisor-02: 210 k8s-worker-02 — stopped
 
 ## Resolution
 
@@ -23,12 +23,12 @@ Both Proxmox hosts (pve01 + pve02) rebooted ~1d4h before detection (uptime confi
 3. Unsealed Vault (standalone, does not auto-unseal)
 4. **Enabled autostart on all VMs to prevent recurrence:**
    ```bash
-   # pve01
+   # hypervisor-01
    qm set 200 --onboot 1 --startup order=1   # master
    qm set 103 --onboot 1 --startup order=1   # dns
    qm set 201 --onboot 1 --startup order=2   # worker-01
    qm set 101 --onboot 1                     # linux-lab
-   # pve02
+   # hypervisor-02
    qm set 210 --onboot 1 --startup order=2   # worker-02
    ```
 
@@ -42,5 +42,5 @@ Both Proxmox hosts (pve01 + pve02) rebooted ~1d4h before detection (uptime confi
 
 The alert stream was noisy/ineffective:
 - Real outage (whole cluster down) was buried under repeated identical TargetDown messages with no "cluster down" summary.
-- GoogleUpdater flapping (now suppressed) and Windows agent alerts (SRV-ERP, HRMI, SRV-FILE) mixed in.
+- GoogleUpdater flapping (now suppressed) and Windows agent alerts (APP-SERVER-03, HRMI, APP-SERVER-01) mixed in.
 - Recommend: add a high-level "cluster/control-plane down" alert, group/throttle repeats, and route Windows-host alerts separately from k8s alerts.

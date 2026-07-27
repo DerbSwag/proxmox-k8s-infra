@@ -85,7 +85,7 @@ prometheus:
     additionalScrapeConfigs:
       - job_name: 'linux-lab'
         static_configs:
-          - targets: ['10.0.1.20:9100']
+          - targets: ['192.0.2.20:9100']
             labels:
               instance: 'linux-lab'
   service:

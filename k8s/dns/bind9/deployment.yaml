@@ -31,8 +31,8 @@ spec:
               mountPath: /etc/bind/zones/db.lab.local
               subPath: db.lab.local
             - name: bind9-config
-              mountPath: /etc/bind/zones/db.10.0.1
-              subPath: db.10.0.1
+              mountPath: /etc/bind/zones/db.192.0.2
+              subPath: db.192.0.2
           resources:
             requests:
               cpu: 50m

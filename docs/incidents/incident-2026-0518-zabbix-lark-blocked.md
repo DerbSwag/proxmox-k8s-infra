@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-13 → 2026-05-18 (5 days undetected)
 **Severity:** Medium
-**Impact:** All Zabbix alerts to Lark stopped working (Windows servers, CCTV, Linux hosts)
+**Impact:** All Zabbix alerts to Lark stopped working (Windows servers, camera, Linux hosts)
 **Resolved:** 2026-05-18 17:39
 
 ## Timeline
@@ -40,9 +40,9 @@ Added egress rule to `allow-egress-zabbix` NetworkPolicy:
     - ipBlock:
         cidr: 0.0.0.0/0
         except:
-          - 10.0.0.0/8
+          - <PRIVATE_NETWORK_CIDR>
           - 172.16.0.0/12
-          - 10.0.0.0/16
+          - 192.0.2.0/24
   ports:
     - port: 443
       protocol: TCP

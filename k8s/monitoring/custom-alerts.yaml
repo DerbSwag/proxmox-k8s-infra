@@ -193,8 +193,8 @@ spec:
             description: |
               No node-exporter target is up across the entire cluster.
               Most likely the whole k3s cluster is down. Check Proxmox hosts
-              (pve01/pve02) and that VMs are running:
-                ssh root@10.0.1.1 'qm list'
+              (hypervisor-01/hypervisor-02) and that VMs are running:
+                ssh admin@192.0.2.1 'qm list'
               VMs now have onboot=1; if they are stopped, start master first.
         - alert: MultipleNodesDown
           expr: count(up{job="node-exporter"} == 0) >= 2

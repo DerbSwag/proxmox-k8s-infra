@@ -8,7 +8,7 @@
 ## Pre-flight (both tasks)
 
 ```bash
-ssh devops@10.0.1.10
+ssh labuser@192.0.2.10
 export PATH=$PATH:/usr/local/bin
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 kubectl get nodes            # all Ready (worker-01 currently cordoned)
@@ -32,7 +32,7 @@ Confirmed NOT fixed by: UFW rules, iptables flush, service restart, cold reboot.
 - k3s version: `v1.34.5+k3s1`
 - Uninstaller present: `/usr/local/bin/k3s-agent-uninstall.sh`
 - Units: `k3s-agent.service` (enabled), stray `k3s.service` (active, no file)
-- Node IP 10.0.1.11, joins master at `https://10.0.1.10:6443`
+- Node IP 192.0.2.11, joins master at `https://192.0.2.10:6443`
 
 ### Steps
 ```bash
@@ -44,7 +44,7 @@ kubectl drain k8s-worker-01 --ignore-daemonsets --delete-emptydir-data --force
 sudo cat /var/lib/rancher/k3s/server/node-token   # = $TOKEN
 
 # 3. On worker-01: stop everything and uninstall the agent cleanly
-ssh devops@10.0.1.11
+ssh labuser@192.0.2.11
 sudo systemctl stop k3s k3s-agent 2>/dev/null
 sudo /usr/local/bin/k3s-agent-uninstall.sh        # removes agent, CNI, iptables
 #   verify nothing left:
@@ -54,7 +54,7 @@ ip link | grep -E 'cni0|flannel'                  # expect gone
 # 4. Reinstall agent fresh, joined to master
 curl -sfL https://get.k3s.io | \
   INSTALL_K3S_VERSION=v1.34.5+k3s1 \
-  K3S_URL=https://10.0.1.10:6443 \
+  K3S_URL=https://192.0.2.10:6443 \
   K3S_TOKEN=$TOKEN \
   sh -
 
@@ -62,8 +62,8 @@ curl -sfL https://get.k3s.io | \
 kubectl get nodes                                  # worker-01 Ready
 kubectl uncordon k8s-worker-01
 # host-port check (the real test):
-timeout 4 bash -c 'echo > /dev/tcp/10.0.1.11/9100'  && echo OK9100
-timeout 4 bash -c 'echo > /dev/tcp/10.0.1.11/10250' && echo OK10250
+timeout 4 bash -c 'echo > /dev/tcp/192.0.2.11/9100'  && echo OK9100
+timeout 4 bash -c 'echo > /dev/tcp/192.0.2.11/10250' && echo OK10250
 kubectl exec -n kube-system <a-pod-on-worker01> -- echo ok   # should NOT 502
 ```
 

@@ -14,7 +14,7 @@ export const options = {
 };
 
 export default function () {
-  const res = http.get('http://10.0.1.140:30627/');
+  const res = http.get('http://192.0.2.140:30627/');
   check(res, { 'status 200': (r) => r.status === 200 });
   sleep(0.1);
 }

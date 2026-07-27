@@ -16,7 +16,7 @@ Zabbix ตรวจจับปัญหาได้ (triggers fire) แต่ *
 Media types ใน Zabbix ไม่ได้ถูก configure ให้ส่งไปยัง Lark webhook อย่างถูกต้อง — ต้อง setup media types แยกสำหรับแต่ละ host group:
 1. Linux servers
 2. Windows servers
-3. CCTV devices
+3. camera devices
 
 ## Fix Applied
 
@@ -29,7 +29,7 @@ Configure Zabbix media types ทั้ง 3 ให้ส่งผ่าน Lark 
 ทดสอบส่ง alert จริงทั้ง 3 media types:
 - ✅ Linux server alerts → Lark
 - ✅ Windows server alerts → Lark
-- ✅ CCTV alerts → Lark
+- ✅ camera alerts → Lark
 
 ## Lessons Learned
 

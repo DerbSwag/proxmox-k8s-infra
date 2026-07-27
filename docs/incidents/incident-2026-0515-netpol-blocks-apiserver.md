@@ -22,9 +22,9 @@ Multiple monitoring and cluster services experienced CrashLoopBackOff and target
 | 08:47 | VM 200 hard-reset performed, master came back online |
 | ~09:00 | Alerts begin firing: TargetDown (apiserver), CoreDNSNoHealthyPods, LarkAlertAdapterDown, KubePodCrashLooping |
 | 11:25 | Investigation started — identified kube-state-metrics and Grafana sidecars in CrashLoopBackOff |
-| 11:28 | Root cause identified: pods cannot reach ClusterIP 10.43.0.1:443 (API server) |
+| 11:28 | Root cause identified: pods cannot reach ClusterIP <KUBERNETES_SERVICE_IP>:443 (API server) |
 | 14:08 | Deeper investigation: Prometheus targets all down, PrometheusOperatorWatchErrors firing |
-| 14:20 | Identified true root cause: NetworkPolicy `allow-egress-monitoring` blocks egress to 10.0.1.10:6443 |
+| 14:20 | Identified true root cause: NetworkPolicy `allow-egress-monitoring` blocks egress to 192.0.2.10:6443 |
 | 14:32 | Restarted k3s/k3s-agent on all 3 nodes to refresh networking |
 | 14:33 | Patched NetworkPolicy to allow port 6443 egress to API server |
 | 14:35 | All targets up, all pods Running, only Watchdog alert remaining (expected) |
@@ -42,9 +42,9 @@ The k8s-master VM (Proxmox VM 200) failed to gracefully reboot at 08:45. The QEM
 ### 2. NetworkPolicy Misconfiguration (Root Cause)
 The `allow-egress-monitoring` NetworkPolicy (deployed 2 days prior via ArgoCD) had a flaw:
 
-- It allowed egress to `10.43.0.0/16` (ClusterIP range) — which should cover the `kubernetes` service at `10.43.0.1`
-- However, **kube-router** (the network policy controller) evaluates policies **after DNAT** — meaning traffic to `10.43.0.1:443` is seen as traffic to `10.0.1.10:6443` (the actual API server endpoint)
-- The policy only allowed ports 9100, 10250, 10255 to `10.0.1.x/24`
+- It allowed egress to the ClusterIP range, which should cover the `kubernetes` service at `<KUBERNETES_SERVICE_IP>`
+- However, **kube-router** (the network policy controller) evaluates policies **after DNAT** — meaning traffic to `<KUBERNETES_SERVICE_IP>:443` is seen as traffic to `192.0.2.10:6443` (the actual API server endpoint)
+- The policy only allowed ports 9100, 10250, 10255 to `192.0.2.x/24`
 - Port 6443 was not included, so API server traffic was **REJECTED**
 
 This meant that after the master rebooted and pods restarted, they could never re-establish connections to the API server from the monitoring namespace.
@@ -71,7 +71,7 @@ This meant that after the master rebooted and pods restarted, they could never r
 
 1. Restarted k3s-agent on worker-01 and worker-02, k3s on master
 2. Deleted stuck pods (kube-state-metrics, Grafana, Prometheus, Prometheus Operator, ArgoCD repo-server)
-3. Patched NetworkPolicy `allow-egress-monitoring` to add port 6443 to the `10.0.1.x/24` egress rule
+3. Patched NetworkPolicy `allow-egress-monitoring` to add port 6443 to the `192.0.2.x/24` egress rule
 4. Pushed permanent fix to Git repo: `https://github.com/DerbSwag/proxmox-k8s-infra` (commit `35e0bba`)
 
 ---

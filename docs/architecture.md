@@ -10,11 +10,11 @@
 
 **ทำอะไร:**
 - รัน VM ทั้งหมดของ lab (k8s nodes + dns-server)
-- Cluster 2 nodes (pve01 + pve02) ทำให้มี HA capability
+- Cluster 2 nodes (hypervisor-01 + hypervisor-02) ทำให้มี HA capability
 
 **ทำงานยังไง:**
-- pve01 (10.0.1.1) — host VM 103, 200, 201
-- pve02 (10.0.1.2) — host VM 210
+- hypervisor-01 (192.0.2.1) — host VM 103, 200, 201
+- hypervisor-02 (192.0.2.2) — host VM 210
 - ใช้ local-lvm (thin provisioning) เก็บ disk ของ VM
 - Backup ทุกอาทิตย์ 02:00 ด้วย vzdump snapshot mode
 - Firewall เปิด DROP policy อนุญาตเฉพาะ LAN
@@ -31,7 +31,7 @@
 
 **ทำงานยังไง:**
 - 1 master (control plane) + 2 workers
-- ใช้ flannel เป็น CNI (pod network 10.42.0.0/16)
+- ใช้ flannel เป็น CNI (pod network <POD_CIDR>)
 - ใช้ local-path-provisioner สำหรับ persistent storage
 - kubectl ใช้ได้เฉพาะบน k8s-master
 
@@ -65,9 +65,9 @@ Node/Pod → Prometheus scrape metrics ทุก 30s
 ```
 
 **Access:**
-- Grafana: http://10.0.1.10:31000 (admin/<see-secret>)
-- Prometheus: http://10.0.1.10:31090
-- Alertmanager: http://10.0.1.10:31093
+- Grafana: http://192.0.2.10:31000 (admin/<see-secret>)
+- Prometheus: http://192.0.2.10:31090
+- Alertmanager: http://192.0.2.10:31093
 
 ---
 
@@ -86,11 +86,11 @@ Node/Pod → Prometheus scrape metrics ทุก 30s
 
 ## 📡 Zabbix v7.0 (Infrastructure Monitoring)
 
-**คืออะไร:** Enterprise monitoring platform สำหรับ monitor ทุกอย่าง (servers, network, CCTV)
+**คืออะไร:** Enterprise monitoring platform สำหรับ monitor ทุกอย่าง (servers, network, camera)
 
 **ทำอะไร:**
-- Monitor 14 hosts: k8s nodes, Proxmox, Windows servers, CCTV (SNMP)
-- ส่ง alert ไป Lark เมื่อมีปัญหา (3 media types: Linux/Windows/CCTV)
+- Monitor 14 hosts: k8s nodes, Proxmox, Windows servers, camera (SNMP)
+- ส่ง alert ไป Lark เมื่อมีปัญหา (3 media types: Linux/Windows/camera)
 
 **ทำงานยังไง:**
 - Zabbix Server รันบน k8s (namespace: zabbix)
@@ -98,7 +98,7 @@ Node/Pod → Prometheus scrape metrics ทุก 30s
 - PostgreSQL เป็น database
 - Alert → Lark webhook โดยตรง (ไม่ผ่าน Alertmanager)
 
-**Access:** http://10.0.1.10:30080
+**Access:** http://192.0.2.10:30080
 
 ---
 
@@ -154,7 +154,7 @@ ArgoCD sync → deploy version ใหม่
 
 **คืออะไร:** DNS server สำหรับ resolve ชื่อภายใน (lab.local)
 
-**ทำอะไร:** แปลงชื่อ เช่น `k8s-master.lab.local` → `10.0.1.10`
+**ทำอะไร:** แปลงชื่อ เช่น `k8s-master.lab.local` → `192.0.2.10`
 
 **ทำงานยังไง:**
 - รันเป็น pod ใน namespace infra
@@ -163,7 +163,7 @@ ArgoCD sync → deploy version ใหม่
 
 **ทดสอบ:**
 ```bash
-nslookup k8s-master.lab.local 10.0.1.10 -port=30053
+nslookup k8s-master.lab.local 192.0.2.10 -port=30053
 ```
 
 ---
@@ -265,8 +265,8 @@ kubectl apply -f sealed-secret.yaml
 | 22 | SSH | LAN (4 subnets) |
 | 8006 | Proxmox WebUI | LAN |
 | 30000-32767 | k8s NodePort | LAN |
-| 10050 | Zabbix Agent | 10.0.1.x/24, 10.0.3.x/24 |
-| 5405-5412 | Corosync (cluster) | 10.0.1.x/24 |
+| 10050 | Zabbix Agent | 192.0.2.x/24, 203.0.113.x/24 |
+| 5405-5412 | Corosync (cluster) | 192.0.2.x/24 |
 
 ---
 
@@ -281,7 +281,7 @@ kubectl apply -f sealed-secret.yaml
 - ArgoCD manage + Image Updater auto-deploy
 - NodePort 30627
 
-**Access:** http://10.0.1.10:30627
+**Access:** http://192.0.2.10:30627
 
 ---
 
