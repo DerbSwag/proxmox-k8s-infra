@@ -6,6 +6,7 @@ All notable public-safe changes to this portfolio repository.
 
 ### Added
 
+- Added public-safe incident report for `logrotate.service` failure caused by duplicate rsyslog logrotate entries.
 - Added public-safe Kubernetes operations lab documentation:
   - workload and storage,
   - PostgreSQL CronJob backup,

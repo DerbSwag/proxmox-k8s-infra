@@ -27,6 +27,7 @@ The goal is to show operational maturity:
 | Metrics gaps | Kubelet and node-exporter reachability must be checked separately from application availability |
 | Proxmox host instability | Hardware and quorum issues need separate runbooks from Kubernetes incidents |
 | Power outage recovery | VM autostart, dependency order, and control-plane recovery must be verified |
+| Logrotate duplicate entries | Distribution-managed log rotation should not be duplicated by custom rules |
 
 ## Representative Incident Template
 
@@ -59,6 +60,7 @@ These incidents demonstrate:
 - backup and disaster recovery thinking,
 - observability pipeline validation,
 - GitOps recovery and self-heal behavior,
+- Linux service troubleshooting and log rotation hygiene,
 - operational documentation discipline.
 
 Detailed internal evidence is kept in the private source-of-truth repository.
