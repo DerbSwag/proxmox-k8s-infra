@@ -2,6 +2,29 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-07-29]
+
+### Added
+
+- Added public-safe Kubernetes operations lab documentation:
+  - workload and storage,
+  - PostgreSQL CronJob backup,
+  - Prometheus alert rule,
+  - Grafana namespace dashboard,
+  - Loki log dashboard,
+  - Grafana-managed log alert,
+  - Argo CD repository authentication recovery,
+  - GitOps self-heal and drift detection,
+  - cleanup/runbook workflow,
+  - remote backup checksum verification.
+- Added Kubernetes lab cleanup runbook with safe deletion order and PVC preservation rules.
+- Added lab documentation index under `docs/labs/`.
+
+### Changed
+
+- Added a `Validated Kubernetes Operations Labs` index to the root README.
+- Replaced the repository tree with ASCII-safe formatting.
+
 ## [2026-07-27]
 
 ### Changed
@@ -40,4 +63,3 @@ All notable public-safe changes to this portfolio repository.
 
 - Documented common operational issues such as disk pressure, DNS policy blocks, alert routing failures, and GitOps drift.
 - Captured disaster recovery and backup lessons in sanitized form.
-

@@ -4,7 +4,7 @@
 
 Public-safe portfolio repository for a Proxmox-based Kubernetes infrastructure lab.
 
-This repo demonstrates how I design, deploy, operate, observe, secure, and recover a small production-style Kubernetes platform. It is intentionally sanitized: real hostnames, internal IPs, credentials, webhook URLs, and organization-specific inventory are excluded or replaced with placeholders.
+This repo demonstrates how I design, deploy, operate, observe, secure, and recover a small realistic hands-on Kubernetes platform. It is intentionally sanitized: real hostnames, internal IPs, credentials, webhook URLs, and organization-specific inventory are excluded or replaced with placeholders.
 
 ---
 
@@ -74,6 +74,25 @@ Network values in this public repo use documentation ranges or placeholders. The
 | Off-PVC export | SQL dump copied from PVC to node filesystem |
 | Remote backup | SQL dump copied to a remote host and verified with SHA-256 |
 | Cleanup runbook | Temporary lab resources removed safely while preserving stateful data |
+
+---
+
+## Validated Kubernetes Operations Labs
+
+Detailed public-safe summary: [docs/labs/kubernetes-operations-lab.md](docs/labs/kubernetes-operations-lab.md)
+
+- Kubernetes workload and storage
+- PostgreSQL CronJob backup
+- Prometheus alert rule
+- Grafana namespace dashboard
+- Loki log dashboard
+- Grafana-managed log alert
+- Argo CD repo auth recovery
+- GitOps self-heal and drift detection
+- Cleanup/runbook
+- Remote backup checksum verification
+
+Related runbook: [docs/runbooks/kubernetes-lab-cleanup-runbook.md](docs/runbooks/kubernetes-lab-cleanup-runbook.md)
 
 ---
 
@@ -182,17 +201,17 @@ Public-safety controls for this repo:
 
 ```text
 proxmox-k8s-infra/
-├── ansible/          # k3s and host automation examples
-├── argocd/           # GitOps application examples
-├── docs/             # sanitized architecture, incidents, DR, and notes
-├── helm/             # Helm chart and platform values examples
-├── k8s/              # Kubernetes manifests
-├── scripts/          # operational helper scripts
-├── terraform/        # Proxmox VM provisioning examples
-├── CHANGELOG.md
-├── INCIDENTS.md
-├── RUNBOOK.md
-└── README.md
+|-- ansible/          # k3s and host automation examples
+|-- argocd/           # GitOps application examples
+|-- docs/             # sanitized architecture, labs, incidents, DR, and notes
+|-- helm/             # Helm chart and platform values examples
+|-- k8s/              # Kubernetes manifests
+|-- scripts/          # operational helper scripts
+|-- terraform/        # Proxmox VM provisioning examples
+|-- CHANGELOG.md
+|-- INCIDENTS.md
+|-- RUNBOOK.md
+`-- README.md
 ```
 
 ---
@@ -211,4 +230,3 @@ proxmox-k8s-infra/
 ## Safety Notice
 
 This is a learning and portfolio repo. Values are intentionally sanitized. Do not copy the examples directly into production without reviewing network ranges, secrets, access control, backup retention, and compliance requirements.
-
