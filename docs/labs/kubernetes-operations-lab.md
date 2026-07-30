@@ -13,7 +13,7 @@ This lab validates day-2 Kubernetes operations, not only application deployment.
 Validated workflow:
 
 ```text
-workloads -> storage -> backup -> monitoring -> logging -> alerting -> GitOps -> drift/self-heal -> cleanup -> remote backup verification -> restore validation
+workloads -> storage -> backup -> monitoring -> logging -> alerting -> GitOps -> drift/self-heal -> cleanup -> remote backup verification -> remote restore validation
 ```
 
 ---
@@ -31,6 +31,7 @@ workloads -> storage -> backup -> monitoring -> logging -> alerting -> GitOps ->
 - Cleanup/runbook
 - Remote backup checksum verification
 - PostgreSQL backup restore drill
+- Remote backup restore validation
 
 ---
 
@@ -112,6 +113,7 @@ Validated:
 - Backup file was inspected and confirmed as a PostgreSQL SQL dump.
 - Restore was performed into a temporary database rather than the live application database.
 - Restored schema and row count were queried successfully.
+- The restore drill was repeated using the remote backup copy, not only the PVC-exported local copy.
 - Temporary restore database and temporary SQL files were removed after verification.
 
 Public-safe restore pattern:
@@ -132,6 +134,21 @@ kubectl -n <namespace> exec <postgres-pod> -- \
   psql -U postgres -d <restore-test-db> -c "SELECT COUNT(*) FROM <table>;"
 ```
 
+Remote restore pattern:
+
+```bash
+REMOTE_BACKUP=/path/to/remote-backups/<backup-file>.sql
+LOCAL_BACKUP=/tmp/<restore-test-file>.sql
+
+ssh <user>@<remote-host> "sha256sum '$REMOTE_BACKUP'"
+scp <user>@<remote-host>:"$REMOTE_BACKUP" "$LOCAL_BACKUP"
+sha256sum "$LOCAL_BACKUP"
+
+kubectl -n <namespace> cp "$LOCAL_BACKUP" <postgres-pod>:/tmp/restore-test.sql
+kubectl -n <namespace> exec <postgres-pod> -- \
+  psql -U postgres -d <restore-test-db> -f /tmp/restore-test.sql
+```
+
 Cleanup pattern:
 
 ```bash
@@ -140,14 +157,18 @@ kubectl -n <namespace> exec <postgres-pod> -- \
 
 kubectl -n <namespace> exec <postgres-pod> -- \
   rm -f /tmp/restore-test.sql
+
+rm -f "$LOCAL_BACKUP"
 ```
 
 Key lessons:
 
 - A checksum proves file integrity; a restore drill proves recoverability.
 - Restore validation should run against a temporary database, not the live database.
+- Remote restore validation is stronger than remote checksum verification alone.
 - SQL dumps that do not include `DROP TABLE IF EXISTS` should be restored into an empty database.
 - Cleanup commands should be idempotent so they can be safely rerun.
+- Long remote paths should be stored in variables to reduce copy/paste line-wrap mistakes.
 
 ---
 

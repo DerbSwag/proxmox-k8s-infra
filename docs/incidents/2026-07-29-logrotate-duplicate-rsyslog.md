@@ -104,6 +104,7 @@ root filesystem below disk pressure threshold
 
 ## Follow-Up
 
-- Fix shell `PATH` if `systemctl` is not found in a new login session.
+- Fixed shell startup configuration after finding that a non-Linux path entry had overwritten the expected command path in a user shell startup file.
+- Validated a fresh shell could resolve `kubectl`, `sudo`, `systemctl`, and `wc`.
 - Keep this incident as a Linux operations troubleshooting example.
-- Do not publish raw hostnames, internal paths beyond generic system paths, or full terminal output in public docs.
+- Do not publish raw hostnames, user-specific home paths, internal paths beyond generic system paths, or full terminal output in public docs.

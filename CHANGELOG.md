@@ -8,6 +8,11 @@ All notable public-safe changes to this portfolio repository.
 
 - Added public-safe PostgreSQL backup restore drill summary.
 - Documented restore validation pattern using a temporary database and idempotent cleanup.
+- Added public-safe remote backup restore validation pattern.
+
+### Changed
+
+- Updated logrotate incident follow-up with sanitized shell PATH recovery notes.
 
 ## [2026-07-29]
 
