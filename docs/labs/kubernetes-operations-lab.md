@@ -13,7 +13,7 @@ This lab validates day-2 Kubernetes operations, not only application deployment.
 Validated workflow:
 
 ```text
-workloads -> storage -> backup -> monitoring -> logging -> alerting -> GitOps -> drift/self-heal -> cleanup -> remote backup verification
+workloads -> storage -> backup -> monitoring -> logging -> alerting -> GitOps -> drift/self-heal -> cleanup -> remote backup verification -> restore validation
 ```
 
 ---
@@ -30,6 +30,7 @@ workloads -> storage -> backup -> monitoring -> logging -> alerting -> GitOps ->
 - GitOps self-heal and drift detection
 - Cleanup/runbook
 - Remote backup checksum verification
+- PostgreSQL backup restore drill
 
 ---
 
@@ -101,6 +102,52 @@ Key lessons:
 - Remote copy plus checksum is stronger evidence than "backup job succeeded".
 - Restore testing is the next step after checksum verification.
 - Public documentation should not publish real backup files or database dumps.
+
+---
+
+## PostgreSQL Backup Restore Drill
+
+Validated:
+
+- Backup file was inspected and confirmed as a PostgreSQL SQL dump.
+- Restore was performed into a temporary database rather than the live application database.
+- Restored schema and row count were queried successfully.
+- Temporary restore database and temporary SQL files were removed after verification.
+
+Public-safe restore pattern:
+
+```bash
+kubectl -n <namespace> exec <postgres-pod> -- \
+  psql -U postgres -c "DROP DATABASE IF EXISTS <restore-test-db>;"
+
+kubectl -n <namespace> exec <postgres-pod> -- \
+  psql -U postgres -c "CREATE DATABASE <restore-test-db>;"
+
+kubectl -n <namespace> cp <backup-file>.sql <postgres-pod>:/tmp/restore-test.sql
+
+kubectl -n <namespace> exec <postgres-pod> -- \
+  psql -U postgres -d <restore-test-db> -f /tmp/restore-test.sql
+
+kubectl -n <namespace> exec <postgres-pod> -- \
+  psql -U postgres -d <restore-test-db> -c "SELECT COUNT(*) FROM <table>;"
+```
+
+Cleanup pattern:
+
+```bash
+kubectl -n <namespace> exec <postgres-pod> -- \
+  psql -U postgres -c "DROP DATABASE IF EXISTS <restore-test-db>;"
+
+kubectl -n <namespace> exec <postgres-pod> -- \
+  rm -f /tmp/restore-test.sql
+```
+
+Key lessons:
+
+- A checksum proves file integrity; a restore drill proves recoverability.
+- Restore validation should run against a temporary database, not the live database.
+- SQL dumps that do not include `DROP TABLE IF EXISTS` should be restored into an empty database.
+- Cleanup commands should be idempotent so they can be safely rerun.
 
 ---
 
@@ -322,4 +369,3 @@ Publish instead:
 - lessons learned
 - cleanup approach
 - evidence summaries without internal identifiers
-

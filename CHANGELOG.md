@@ -2,6 +2,13 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-07-30]
+
+### Added
+
+- Added public-safe PostgreSQL backup restore drill summary.
+- Documented restore validation pattern using a temporary database and idempotent cleanup.
+
 ## [2026-07-29]
 
 ### Added
