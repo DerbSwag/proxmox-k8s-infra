@@ -15,6 +15,7 @@ All notable public-safe changes to this portfolio repository.
 - Added post-reboot read-only disk validation evidence showing the new HDD failed after 128 MiB with medium read errors.
 - Added replacement completion evidence: replacement storage validated, backup dump copy verified, and original source retained as rollback.
 - Documented backup schedule migration to replacement storage and a successful manual VM backup test.
+- Added public-safe off-host backup copy pattern for VMs hosted on other Proxmox nodes.
 
 ## [2026-07-30]
 

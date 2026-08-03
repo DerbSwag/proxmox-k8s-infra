@@ -237,3 +237,34 @@ source backups are kept temporarily as rollback copy
 ```
 
 Do not delete the original backup source on the same day as replacement. Wait for at least one normal backup/reboot cycle before moving retention fully to the replacement storage.
+
+---
+
+## Off-Host Backup Copy Pattern
+
+Directory storage backed by a local disk is not shared storage. Other Proxmox nodes may see the cluster-wide storage definition, but they cannot use the storage unless the same mount exists on that node.
+
+For a VM hosted on another Proxmox node, create an explicit off-host backup copy:
+
+```bash
+rsync -avh --progress \
+  /var/lib/vz/dump/<backup-files> \
+  root@<storage-host>:/mnt/pve/<storage-name>/dump/<offhost-folder>/
+```
+
+Verify:
+
+```bash
+sha256sum /var/lib/vz/dump/<backup-files>
+ssh root@<storage-host> 'sha256sum /mnt/pve/<storage-name>/dump/<offhost-folder>/<backup-files>'
+ssh root@<storage-host> "journalctl -k -b --no-pager | grep -Ei '<disk>|I/O error|Medium Error|Hardware Error|READ DMA|READ FPDMA'"
+```
+
+Record completion only when:
+
+```text
+source and destination checksums match
+destination backup files are present on the replacement storage
+replacement storage has enough free space
+kernel logs remain clean after the copy
+```

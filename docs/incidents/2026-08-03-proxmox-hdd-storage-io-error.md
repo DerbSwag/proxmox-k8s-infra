@@ -161,6 +161,8 @@ replacement storage usage after test: approximately 11%
 kernel log after test: no new disk I/O errors
 ```
 
+An off-host backup copy was also created for a VM hosted on another Proxmox node. The source and destination checksums matched, and kernel logs on the replacement storage host remained clean after the copy.
+
 The original backup source directory was intentionally kept after migration as a rollback copy until the new storage completes at least one normal backup/reboot cycle.
 
 ---
@@ -178,6 +180,7 @@ Completed actions:
 7. Copied and verified backup dumps without deleting the original source.
 8. Updated the Proxmox backup job target to the replacement storage.
 9. Ran a manual VM backup test to the replacement storage.
+10. Copied a backup from another Proxmox node to the replacement storage as an off-host backup and verified checksums.
 
 Future preventive actions:
 
@@ -204,6 +207,7 @@ smartctl -l selftest /dev/<disk>
 - `/etc/fstab` auto-mount entries should be disabled when a disk is known unstable, even if `nofail` is present.
 - Large backup migrations should be done with a verification plan and a rollback path.
 - Replacement is not complete until storage is mounted, active in Proxmox, writable, backup copies match, checksum verification is clean, and kernel logs remain clean.
+- Cluster-visible directory storage backed by a local disk is not shared storage. Backups for VMs on other nodes need shared storage or an explicit off-host copy.
 
 ---
 
@@ -216,6 +220,7 @@ Replacement HDD storage: active
 Backup dump copy: verified
 Backup schedule target: replacement storage
 Manual VM backup test: passed
+Off-host backup copy: verified
 Original backup source: kept as rollback copy
 VM creation on replacement HDD: allowed for lab use after validation
 ```
