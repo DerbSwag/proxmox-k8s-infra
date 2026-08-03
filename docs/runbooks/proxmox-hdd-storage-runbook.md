@@ -244,6 +244,16 @@ Do not delete the original backup source on the same day as replacement. Wait fo
 
 Directory storage backed by a local disk is not shared storage. Other Proxmox nodes may see the cluster-wide storage definition, but they cannot use the storage unless the same mount exists on that node.
 
+Avoid cluster-wide `all` backup jobs when the selected storage is a local disk mounted on only one node. Split schedules by node or use true shared storage.
+
+Example pattern:
+
+```text
+backup job A: VMs on storage-owning node -> replacement local storage
+backup job B: VMs on another node -> that node's local storage
+sync job C: copy latest backup from other node -> replacement local storage
+```
+
 For a VM hosted on another Proxmox node, create an explicit off-host backup copy:
 
 ```bash
@@ -268,3 +278,5 @@ destination backup files are present on the replacement storage
 replacement storage has enough free space
 kernel logs remain clean after the copy
 ```
+
+For recurring protection, run the off-host sync after the scheduled backup window and log both checksum verification and replacement-storage disk health.

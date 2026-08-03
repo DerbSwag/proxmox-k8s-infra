@@ -16,6 +16,7 @@ All notable public-safe changes to this portfolio repository.
 - Added replacement completion evidence: replacement storage validated, backup dump copy verified, and original source retained as rollback.
 - Documented backup schedule migration to replacement storage and a successful manual VM backup test.
 - Added public-safe off-host backup copy pattern for VMs hosted on other Proxmox nodes.
+- Documented node-specific backup schedules and off-host sync automation for local Proxmox directory storage.
 
 ## [2026-07-30]
 
