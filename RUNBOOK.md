@@ -22,6 +22,7 @@ This file is a public-safe summary of operational runbooks used in the lab. Deta
 | GitOps OutOfSync | Read Argo CD Application conditions, compare desired/live state, then sync or allow self-heal |
 | Alert not delivered | Validate alert state, receiver routing, adapter logs, and outbound egress policy |
 | Backup verification | Check latest backup timestamp, file count, size, checksum, and remote copy status |
+| Proxmox HDD storage error | Disable the new storage, keep source backups, inspect kernel I/O errors, and verify hardware before reuse |
 
 ## Safe Cleanup Pattern
 
@@ -32,6 +33,18 @@ This file is a public-safe summary of operational runbooks used in the lab. Deta
 4. Delete stateless demo resources.
 5. Keep PVCs unless backup and restore are verified.
 6. Re-run inventory commands and record the final state.
+```
+
+## Proxmox Storage Safety Pattern
+
+```text
+1. Confirm the target disk identity before wiping.
+2. Add new storage only after mount and filesystem validation.
+3. Copy backups before deleting source backups.
+4. Verify target copy with file counts, sizes, and checksum/dry-run comparison.
+5. If kernel logs show disk I/O errors, disable the storage and stop using the disk.
+6. Use read-only disk testing first when hardware errors are suspected.
+7. Keep auto-mount disabled until hardware is reseated, tested, or replaced.
 ```
 
 ## Dangerous Cleanup Pattern
@@ -70,4 +83,3 @@ Use placeholders such as:
 ## Portfolio Notes
 
 The purpose of this runbook is to show operational reasoning, not to publish live operational access instructions. Internal command details belong in the private source-of-truth repository.
-

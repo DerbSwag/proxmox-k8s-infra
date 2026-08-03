@@ -26,6 +26,7 @@ The goal is to show operational maturity:
 | Vault restart/data loss | Development-mode storage is not acceptable for persistent secrets |
 | Metrics gaps | Kubelet and node-exporter reachability must be checked separately from application availability |
 | Proxmox host instability | Hardware and quorum issues need separate runbooks from Kubernetes incidents |
+| Proxmox HDD storage I/O error | New storage disks must be burn-tested; never delete source backups until the target copy is verified |
 | Power outage recovery | VM autostart, dependency order, and control-plane recovery must be verified |
 | Logrotate duplicate entries | Distribution-managed log rotation should not be duplicated by custom rules |
 
@@ -60,6 +61,7 @@ These incidents demonstrate:
 - backup and disaster recovery thinking,
 - observability pipeline validation,
 - GitOps recovery and self-heal behavior,
+- Proxmox storage safety and backup migration discipline,
 - Linux service troubleshooting and log rotation hygiene,
 - operational documentation discipline.
 

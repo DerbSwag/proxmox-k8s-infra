@@ -2,6 +2,20 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-08-03]
+
+### Added
+
+- Added public-safe incident report for Proxmox HDD storage I/O errors during backup migration.
+- Added Proxmox HDD storage runbook covering safe disk setup, backup migration, emergency disable, and hardware validation.
+
+### Changed
+
+- Updated incident and runbook summaries with storage safety and backup migration lessons.
+- Added post-reboot read-only disk validation evidence showing the new HDD failed after 128 MiB with medium read errors.
+- Added replacement completion evidence: replacement storage validated, backup dump copy verified, and original source retained as rollback.
+- Documented backup schedule migration to replacement storage and a successful manual VM backup test.
+
 ## [2026-07-30]
 
 ### Added
