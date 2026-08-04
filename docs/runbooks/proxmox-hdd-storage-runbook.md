@@ -280,3 +280,39 @@ kernel logs remain clean after the copy
 ```
 
 For recurring protection, run the off-host sync after the scheduled backup window and log both checksum verification and replacement-storage disk health.
+
+---
+
+## Restore Validation Pattern
+
+Copying backups and comparing checksums is not enough. Validate that at least one backup can be restored and booted.
+
+Use a temporary VMID and keep the restored VM isolated from the network if the original VM is still running:
+
+```bash
+BACKUP=/mnt/pve/<storage-name>/dump/<backup-archive>.vma.zst
+TEST_VMID=<temporary-vmid>
+
+qm status "$TEST_VMID" 2>&1 || true
+qmrestore "$BACKUP" "$TEST_VMID" --storage <restore-storage> --unique 1
+qm set "$TEST_VMID" --name restore-test-<vm-name> --onboot 0
+qm set "$TEST_VMID" --net0 <net-config>,link_down=1
+qm start "$TEST_VMID"
+sleep 25
+qm status "$TEST_VMID"
+qm stop "$TEST_VMID"
+qm destroy "$TEST_VMID" --purge 1
+qm status "$TEST_VMID" 2>&1 || true
+```
+
+Record completion only when:
+
+```text
+restore reaches 100%
+temporary VM starts successfully
+temporary VM is removed after validation
+storage usage remains healthy
+kernel logs show no new disk I/O error phrases
+```
+
+If restore to the normal VM disk storage fails because of thin-pool or capacity constraints, retry against validated directory storage with enough free space. Treat that as a target storage capacity issue, not automatically as a backup archive failure.

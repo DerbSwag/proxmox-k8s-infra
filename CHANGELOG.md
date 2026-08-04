@@ -2,6 +2,13 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-08-04]
+
+### Added
+
+- Added public-safe restore validation pattern for Proxmox backups using a temporary VMID and network isolation.
+- Documented restore-test completion criteria and the difference between backup archive failure and target storage capacity constraints.
+
 ## [2026-08-03]
 
 ### Added
