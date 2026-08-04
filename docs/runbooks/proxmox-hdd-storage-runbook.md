@@ -316,3 +316,38 @@ kernel logs show no new disk I/O error phrases
 ```
 
 If restore to the normal VM disk storage fails because of thin-pool or capacity constraints, retry against validated directory storage with enough free space. Treat that as a target storage capacity issue, not automatically as a backup archive failure.
+
+---
+
+## Thin-Pool Audit Pattern
+
+When a restore fails because the normal VM disk storage is near capacity, audit before cleanup.
+
+Read-only checks:
+
+```bash
+lvs -a -o lv_name,vg_name,lv_attr,lv_size,pool_lv,origin,data_percent,metadata_percent
+qm list
+qm config <vmid>
+qm listsnapshot <vmid>
+pvesm status
+pvesm list <thin-storage>
+df -h / /var/lib/vz
+du -sh /var/lib/vz/dump
+```
+
+If QEMU guest agent is available:
+
+```bash
+qm agent <vmid> get-fsinfo
+```
+
+Decision rules:
+
+```text
+Do not assume backup dump cleanup will reduce thin-pool usage.
+Root filesystem usage and VM thin-pool usage are separate problems.
+Old snapshots can pin changed blocks and keep thin-pool usage high.
+Do not delete snapshots, shrink disks, or move disks until backup and restore evidence exists.
+Consider discard/TRIM only after confirming VM disk options and guest filesystem safety.
+```

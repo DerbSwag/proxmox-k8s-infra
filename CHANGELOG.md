@@ -8,6 +8,7 @@ All notable public-safe changes to this portfolio repository.
 
 - Added public-safe restore validation pattern for Proxmox backups using a temporary VMID and network isolation.
 - Documented restore-test completion criteria and the difference between backup archive failure and target storage capacity constraints.
+- Added public-safe thin-pool audit pattern for separating root filesystem cleanup from VM thin-pool cleanup.
 
 ## [2026-08-03]
 
