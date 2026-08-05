@@ -2,6 +2,14 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-08-05]
+
+### Added
+
+- Added public-safe Zabbix Agent source allowlist note for Kubernetes-hosted Zabbix Server.
+- Documented `Connection reset by peer` as an agent-side source rejection pattern, distinct from firewall timeout.
+- Added validation pattern using `zabbix_get agent.ping` from the Zabbix Server pod.
+
 ## [2026-08-04]
 
 ### Added

@@ -37,6 +37,37 @@ Zabbix trigger actions route to per-OS Lark groups via separate webhook media ty
 | `ValueCacheSize` | 64M | 8M | Prevent "value cache working in low-memory mode" with 14 hosts |
 | `CacheSize` | 64M | 32M | Accommodate growing number of items |
 
+## Agent Source Allowlist for k8s-hosted Zabbix
+
+When Zabbix Server runs inside Kubernetes, passive agent checks may reach monitored hosts from different source addresses:
+
+- the Zabbix server pod IP,
+- the Kubernetes pod CIDR,
+- or a node egress IP if traffic is SNATed by the CNI/node.
+
+If `zabbix_get` returns `Connection reset by peer`, the agent is usually reachable on TCP/10050 but rejecting the source because its `Server=` allowlist is incomplete.
+
+Public-safe example:
+
+```ini
+Server=<control-plane-ip>,<worker-node-ip-1>,<worker-node-ip-2>,<pod-cidr>
+```
+
+Validation pattern:
+
+```bash
+kubectl -n zabbix exec <zabbix-server-pod> -c zabbix-server -- \
+  zabbix_get -s <agent-ip> -p 10050 -t 4 -k agent.ping
+```
+
+Expected result:
+
+```text
+1
+```
+
+Operational note: if the Zabbix server pod moves to another node, agent availability can turn red unless every possible node egress IP is included in `Server=`.
+
 ## Known Issues
 
 - **APP-SERVER-04 (198.51.100.11)**: Agent `Server=` config needs `192.0.2.11` added (Zabbix server SNAT IP). Requires RDP access to fix.
