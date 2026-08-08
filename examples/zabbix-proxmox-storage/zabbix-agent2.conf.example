@@ -1,0 +1,4 @@
+# Replace every placeholder before installing.
+UserParameter=pve.lvmthin.data_percent,cat /var/lib/zabbix/local-lvm-thin-usage
+UserParameter=pve.backup.critical_vm.status,/usr/local/sbin/backup-health.sh /mnt/pve/<backup-storage>/dump <critical-vmid> status
+UserParameter=pve.backup.critical_vm.success_age,/usr/local/sbin/backup-health.sh /mnt/pve/<backup-storage>/dump <critical-vmid> success_age

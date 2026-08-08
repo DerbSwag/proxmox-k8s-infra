@@ -1,0 +1,2 @@
+# Run as root once per minute after replacing the placeholders.
+* * * * * root /usr/local/sbin/local-lvm-thin-usage.sh <volume-group> <thin-pool> > /var/lib/zabbix/local-lvm-thin-usage.tmp && mv /var/lib/zabbix/local-lvm-thin-usage.tmp /var/lib/zabbix/local-lvm-thin-usage

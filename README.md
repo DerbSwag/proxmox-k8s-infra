@@ -153,6 +153,13 @@ Lessons:
 - Backup success requires restore or integrity verification evidence.
 - Cleanup procedures must preserve stateful resources unless backup and restore are validated.
 
+Curated public-safe resources:
+
+- [Proxmox storage-monitoring examples](examples/zabbix-proxmox-storage/)
+- [Operations and DR patterns](docs/runbooks/operations-and-dr-patterns.md)
+- [Operational reliability case studies](docs/case-studies/operational-reliability-patterns.md)
+- [Portable observability dashboard patterns](docs/labs/observability-dashboard-patterns.md)
+
 ---
 
 ## Observability & Alerting
