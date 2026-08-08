@@ -81,6 +81,8 @@ Network values in this public repo use documentation ranges or placeholders. The
 
 Detailed public-safe summary: [docs/labs/kubernetes-operations-lab.md](docs/labs/kubernetes-operations-lab.md)
 
+Restore evidence: [PostgreSQL Backup Restore Drill](docs/labs/kubernetes-operations-lab.md#postgresql-backup-restore-drill)
+
 - Kubernetes workload and storage
 - PostgreSQL CronJob backup
 - Prometheus alert rule
@@ -91,6 +93,8 @@ Detailed public-safe summary: [docs/labs/kubernetes-operations-lab.md](docs/labs
 - GitOps self-heal and drift detection
 - Cleanup/runbook
 - Remote backup checksum verification
+
+The lab also documents the complete restore path: backup PVC -> off-cluster copy -> checksum -> temporary database restore -> query validation -> idempotent cleanup.
 
 Related runbook: [docs/runbooks/kubernetes-lab-cleanup-runbook.md](docs/runbooks/kubernetes-lab-cleanup-runbook.md)
 

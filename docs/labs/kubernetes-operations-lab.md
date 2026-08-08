@@ -290,6 +290,32 @@ Key lessons:
 - Synthetic log generation is useful for verifying the alert path.
 - Keep alert rules only as long as needed for evidence unless they are part of the desired monitoring baseline.
 
+### Alert Lifecycle And Evidence Retention
+
+Temporary alerts are useful for testing an alert path, but they should not quietly become permanent operational configuration. Use a deliberate lifecycle:
+
+```text
+create a scoped synthetic alert
+  -> verify query and alerting state
+  -> capture non-sensitive evidence
+  -> remove the temporary rule
+  -> verify that it no longer exists
+```
+
+Public-safe cleanup pattern:
+
+```bash
+curl -s -X DELETE \
+  -u "$GRAFANA_USER:$GRAFANA_PASS" \
+  https://<grafana-host>/api/v1/provisioning/alert-rules/<rule-uid>
+
+curl -s -o /dev/null -w "%{http_code}\\n" \
+  -u "$GRAFANA_USER:$GRAFANA_PASS" \
+  https://<grafana-host>/api/v1/provisioning/alert-rules/<rule-uid>
+```
+
+Expected post-cleanup result: `404`. Keep the dashboard and any intended baseline rules; remove only the known temporary test rule. Do not publish credentials, internal Grafana URLs, datasource UIDs, or alert-rule UIDs.
+
 ---
 
 ## Argo CD Repository Authentication Recovery
