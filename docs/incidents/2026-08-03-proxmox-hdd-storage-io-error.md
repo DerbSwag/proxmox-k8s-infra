@@ -231,3 +231,22 @@ Off-host sync automation: added
 Original backup source: kept as rollback copy
 VM creation on replacement HDD: allowed for lab use after validation
 ```
+
+---
+
+## Monitoring Follow-Up
+
+A review of the earlier failed weekly backup confirmed that the failure occurred before the replacement-storage migration. The legacy job wrote to the host-local backup target while that host experienced both disk I/O errors and root-filesystem exhaustion. The resulting backup-process `Broken pipe` error was therefore a downstream symptom, not evidence against the replacement disk.
+
+This distinction matters operationally: a successful small manual backup and restore test validates the replacement path, but the next scheduled backup remains the final proof for every protected VM.
+
+The following public-safe monitoring controls were added:
+
+| Risk | Monitoring control |
+| --- | --- |
+| Thin-pool exhaustion | Export the LVM thin-pool data percentage to monitoring; warn above 85% and treat 90% as critical. |
+| Backup job failure | Track the result of the latest backup job for critical VMs. |
+| Stale recovery point | Track the age of the newest successful backup archive; alert when it exceeds the backup SLA. |
+| Missing notification route | Ensure hypervisor events are routed to an on-call destination, rather than relying only on a generic Linux-host rule. |
+
+These alerts must remain actionable: do not suppress a backup-failure or stale-backup alert merely because its root cause is known. Resolve it only after a new scheduled backup produces a successful archive and the monitoring value recovers.

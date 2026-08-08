@@ -351,3 +351,33 @@ Old snapshots can pin changed blocks and keep thin-pool usage high.
 Do not delete snapshots, shrink disks, or move disks until backup and restore evidence exists.
 Consider discard/TRIM only after confirming VM disk options and guest filesystem safety.
 ```
+
+---
+
+## Monitoring Guardrails
+
+Filesystem monitoring alone does not cover an LVM thin pool. Export the thin-pool data percentage separately and alert before the pool reaches the restore-blocking threshold:
+
+```bash
+lvs --noheadings --nosuffix -o data_percent <volume-group>/<thin-pool>
+```
+
+Use a root-owned scheduled collector to write this numeric value to a read-only cache file, then let an unprivileged monitoring agent read the cache. This avoids giving the monitoring agent broad LVM privileges.
+
+Recommended thresholds:
+
+| Signal | Warning | Critical |
+| --- | --- | --- |
+| Thin-pool data usage | >85% | >90% |
+| Host root filesystem | Align with the space required for backup logs, metadata, and rollback copies | Escalate before backup jobs can exhaust the filesystem |
+
+Monitor backup health separately from storage capacity. For each critical VM, collect:
+
+```text
+latest backup job result: success, failed, or missing
+age of newest successful archive: seconds since archive creation
+```
+
+Alert on a failed or missing latest job, and when the newest successful archive exceeds the recovery-point objective. A known failure should stay visible until the next scheduled run succeeds.
+
+Finally, verify that alert-routing rules include the hypervisor host group. A healthy trigger that is not delivered to an operator is not an effective recovery control.

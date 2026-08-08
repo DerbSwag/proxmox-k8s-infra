@@ -2,6 +2,14 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-08-08]
+
+### Added
+
+- Documented public-safe monitoring guardrails for Proxmox thin-pool capacity and scheduled VM backup health.
+- Added the incident follow-up distinguishing a legacy storage failure from replacement-storage validation.
+- Documented the need to route hypervisor alerts to an on-call destination, not only general Linux-host alerts.
+
 ## [2026-08-05]
 
 ### Added
