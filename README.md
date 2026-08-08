@@ -159,6 +159,7 @@ Lessons:
 
 Curated public-safe resources:
 
+- [90-day flagship project plan](docs/plans/90-day-flagship-project-plan.md)
 - [Kubernetes operations lab source templates](k8s/labs/kubernetes-operations/)
 - [Proxmox storage-monitoring examples](examples/zabbix-proxmox-storage/)
 - [Operations and DR patterns](docs/runbooks/operations-and-dr-patterns.md)
