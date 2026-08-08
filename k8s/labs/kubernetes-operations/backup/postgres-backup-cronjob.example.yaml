@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: <namespace>
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: postgres:16
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef: {name: postgres-credentials, key: password}
+              command: [/bin/sh, -ec]
+              args:
+                - |
+                  stamp=$(date -u +%Y%m%dT%H%M%SZ)
+                  pg_dump -h postgres -U postgres <database> > "/backups/<database>-${stamp}.sql"
+                  find /backups -type f -name '*.sql' -mtime +<retention-days> -delete
+              volumeMounts: [{name: backups, mountPath: /backups}]
+          volumes:
+            - name: backups
+              persistentVolumeClaim: {claimName: postgres-backup}

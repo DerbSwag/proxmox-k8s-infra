@@ -1,0 +1,4 @@
+namespace: <namespace>
+resources: [../../base]
+patches: [{path: replica-patch.yaml}]
+images: [{name: nginx, newTag: "1.29"}]

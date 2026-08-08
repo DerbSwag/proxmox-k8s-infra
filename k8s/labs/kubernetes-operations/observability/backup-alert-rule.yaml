@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: postgres-backup-alerts
+  namespace: <monitoring-namespace>
+  labels: {release: <prometheus-release>}
+spec:
+  groups:
+    - name: postgres.backup.rules
+      rules:
+        - alert: PostgresBackupJobFailed
+          expr: kube_job_status_failed{namespace="<namespace>",job_name=~"postgres-backup.*"} > 0
+          for: 0m
+          labels: {severity: warning}
+          annotations:
+            summary: PostgreSQL backup job failed
+            description: Inspect the failed Job and its Pod logs before retrying.

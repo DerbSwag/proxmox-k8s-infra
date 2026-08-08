@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: nginx-kustomize}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: nginx-kustomize}}
+  template:
+    metadata: {labels: {app: nginx-kustomize}}
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.29
+          ports: [{containerPort: 80}]
