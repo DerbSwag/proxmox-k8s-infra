@@ -159,6 +159,7 @@ Lessons:
 
 Curated public-safe resources:
 
+- [Linux lab foundations](examples/linux-lab-foundations/) — Docker, PostgreSQL health dependency, and host-check examples.
 - [90-day flagship project plan](docs/plans/90-day-flagship-project-plan.md)
 - [90-day execution calendar](docs/plans/90-day-execution-calendar.md)
 - [Kubernetes operations lab source templates](k8s/labs/kubernetes-operations/)

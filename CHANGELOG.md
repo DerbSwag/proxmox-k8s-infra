@@ -2,6 +2,13 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-08-14]
+
+### Added
+
+- Added sanitized Linux lab foundations: a Python HTTP container, PostgreSQL Compose health dependency, and reusable disk/service health-check scripts.
+- Documented exclusion of environment files, database dumps, certificates, private keys, SSH material, and container volumes from the public examples.
+
 ## [2026-08-08]
 
 ### Added
