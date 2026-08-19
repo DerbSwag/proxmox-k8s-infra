@@ -2,6 +2,12 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-08-19]
+
+### Added
+
+- Added sanitized Windows Server on Proxmox incident and foundation runbook covering VirtIO storage drivers, QEMU Guest Agent verification, scoped RDP validation, first-boot I/O triage, and AD DS preparation.
+
 ## [2026-08-14]
 
 ### Added
