@@ -23,6 +23,19 @@ This file is a public-safe summary of operational runbooks used in the lab. Deta
 | Alert not delivered | Validate alert state, receiver routing, adapter logs, and outbound egress policy |
 | Backup verification | Check latest backup timestamp, file count, size, checksum, and remote copy status |
 | Proxmox HDD storage error | Disable the new storage, keep source backups, inspect kernel I/O errors, and verify hardware before reuse |
+| Windows Server licensing | Preserve System event evidence, check license state, and remediate only through an authorized Retail, MAK, or organization KMS path |
+
+## Windows Server Licensing Availability Pattern
+
+```text
+1. Preserve System events before changing activation state.
+2. Check Event ID 1074: wlms.exe with an expired-license message identifies a planned licensing shutdown.
+3. Check the license state with slmgr.vbs /dlv and /xpr.
+4. Use only an organization-authorized Retail, MAK, or KMS activation path.
+5. Monitor for renewed Event 1074 entries and unexpected restart events after remediation.
+```
+
+An Event 1074 license-enforcement shutdown does not explain earlier Kernel-Power or unexpected-shutdown events by itself. Track those as a separate power, hardware, or operating-system investigation.
 
 ## Safe Cleanup Pattern
 

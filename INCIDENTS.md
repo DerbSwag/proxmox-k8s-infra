@@ -29,6 +29,7 @@ The goal is to show operational maturity:
 | Proxmox HDD storage I/O error | New storage disks must be burn-tested; never delete source backups until the target copy is verified |
 | Windows Server VirtIO and Guest Agent setup | Windows needs a matching VirtIO storage driver; validate the dedicated `QEMU-GA` service after installation |
 | Power outage recovery | VM autostart, dependency order, and control-plane recovery must be verified |
+| Windows Server license expiry | Event 1074 can distinguish a planned license-enforcement shutdown from an unexpected restart; licensing and host-hardware investigations must remain separate |
 | Logrotate duplicate entries | Distribution-managed log rotation should not be duplicated by custom rules |
 
 ## Representative Incident Template
