@@ -2,6 +2,12 @@
 
 All notable public-safe changes to this portfolio repository.
 
+## [2026-08-28]
+
+### Added
+
+- Added a public-safe Proxmox SATA-link instability incident and recovery runbook covering fault isolation, physical remediation, backup freshness, and post-repair validation.
+
 ## [2026-08-19]
 
 ### Added

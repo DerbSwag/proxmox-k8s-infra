@@ -27,6 +27,7 @@ The goal is to show operational maturity:
 | Metrics gaps | Kubelet and node-exporter reachability must be checked separately from application availability |
 | Proxmox host instability | Hardware and quorum issues need separate runbooks from Kubernetes incidents |
 | Proxmox HDD storage I/O error | New storage disks must be burn-tested; never delete source backups until the target copy is verified |
+| Proxmox SATA link instability | Kernel SATA resets can indicate a cable, connector, port, or drive-interface fault even when SMART media health passes |
 | Windows Server VirtIO and Guest Agent setup | Windows needs a matching VirtIO storage driver; validate the dedicated `QEMU-GA` service after installation |
 | Power outage recovery | VM autostart, dependency order, and control-plane recovery must be verified |
 | Windows Server license expiry | Event 1074 can distinguish a planned license-enforcement shutdown from an unexpected restart; licensing and host-hardware investigations must remain separate |
